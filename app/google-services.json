@@ -1,0 +1,105 @@
+{
+  "project_info": {
+    "project_number": "987165746678",
+    "project_id": "practica1-601de",
+    "storage_bucket": "practica1-601de.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:987165746678:android:c4a7234f651f5e1f7a13d7",
+        "android_client_info": {
+          "package_name": "com.baesuii.fluxnews"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "987165746678-7vckrrthhq5ai060pqha4b41tpnu756h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwl8tLg3e28UUUkL-uS6_-4yOySvhqEos"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "987165746678-7vckrrthhq5ai060pqha4b41tpnu756h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:987165746678:android:0d54e132220201887a13d7",
+        "android_client_info": {
+          "package_name": "com.example.makeitso"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "987165746678-7vckrrthhq5ai060pqha4b41tpnu756h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwl8tLg3e28UUUkL-uS6_-4yOySvhqEos"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "987165746678-7vckrrthhq5ai060pqha4b41tpnu756h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:987165746678:android:8e715435633b01bc7a13d7",
+        "android_client_info": {
+          "package_name": "com.example.univibe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "987165746678-rnbogu33661bkomk5iq2ti0rke0v2inc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.univibe",
+            "certificate_hash": "1caf3119cb06bd0eb5fec87d9ad71a2ba6a80509"
+          }
+        },
+        {
+          "client_id": "987165746678-7vckrrthhq5ai060pqha4b41tpnu756h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwl8tLg3e28UUUkL-uS6_-4yOySvhqEos"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "987165746678-7vckrrthhq5ai060pqha4b41tpnu756h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
