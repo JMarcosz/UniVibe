@@ -5,6 +5,10 @@ plugins {
 //    google services
     alias(libs.plugins.google.services)
     alias(libs.plugins.crahslytics)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
+
+
 }
 android {
     namespace = "com.example.univibe"
@@ -55,6 +59,8 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.firebase.firestore)
 
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.compiler)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
