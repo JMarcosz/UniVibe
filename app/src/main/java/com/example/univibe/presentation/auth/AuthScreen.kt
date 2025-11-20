@@ -1,5 +1,9 @@
 package com.example.univibe.presentation.auth
 
+import android.app.Activity
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -22,6 +27,13 @@ import com.example.univibe.presentation.theme.BtnPrimary
 import com.example.univibe.presentation.theme.BtnSecondary
 import com.example.univibe.presentation.theme.TextField
 import com.example.univibe.presentation.theme.TextGray
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.LifecycleOwner
 
 
 @Composable
@@ -29,6 +41,33 @@ fun AuthScreen(
     viewModel: AuthViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    // Configurar GoogleSignInClient
+    val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        .requestIdToken(context.getString(R.string.default_web_client_id))
+        .requestEmail()
+        .build()
+
+    val googleSignInClient: GoogleSignInClient = GoogleSignIn.getClient(context, gso)
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data: Intent? = result.data
+            val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+            try {
+                val account = task.getResult(Exception::class.java)
+                val idToken = account?.idToken
+                if (!idToken.isNullOrEmpty()) {
+                    viewModel.onGoogleSignIn(idToken)
+                } else {
+                    // handle missing token (optional)
+                }
+            } catch (e: Exception) {
+                // handle error (optional)
+            }
+        }
+    }
 
 
     Column(
@@ -113,7 +152,13 @@ fun AuthScreen(
         }
         Spacer(modifier = Modifier.height(32.dp))
         Button(
-            onClick = { viewModel.onSignUpClick() },
+            onClick = { // lanzar intent de Google Sign-In
+                val signInIntent = googleSignInClient.signInIntent
+                // Forzar selector de cuenta: sign out antes de lanzar
+                googleSignInClient.signOut().addOnCompleteListener {
+                    launcher.launch(signInIntent)
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)

@@ -11,8 +11,8 @@ import androidx.navigation.compose.composable
 import com.example.univibe.presentation.auth.AuthScreen
 import com.example.univibe.presentation.auth.AuthViewModel
 import com.example.univibe.presentation.home.HomeScreen
-import com.example.univibe.presentation.home.HomeViewModel
 import com.example.univibe.domain.repository.AuthRepository
+import kotlinx.coroutines.flow.collect
 
 
 @Composable
@@ -30,8 +30,7 @@ fun NavigationWrapper(
             AuthScreen(viewModel = authViewModel)
         }
         composable(NavRoute.Home.route) {
-            val homeViewModel: HomeViewModel = hiltViewModel()
-            HomeScreen(viewModel = homeViewModel)
+            HomeScreen()
         }
     }
 
@@ -41,6 +40,18 @@ fun NavigationWrapper(
                 popUpTo(startRoute) { inclusive = true }
             }
             launchSingleTop = true
+        }
+    }
+
+    // Listen for navigation events emitted from ViewModels (via NavigationManager)
+    LaunchedEffect(Unit) {
+        NavigationManager.events.collect { route ->
+            navHostController.navigate(route.route) {
+                navHostController.graph.startDestinationRoute?.let { startRoute ->
+                    popUpTo(startRoute) { inclusive = true }
+                }
+                launchSingleTop = true
+            }
         }
     }
 }
