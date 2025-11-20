@@ -1,8 +1,10 @@
 package com.example.univibe.presentation.auth
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.univibe.domain.model.AuthResult
+import com.example.univibe.domain.model.User
 import com.example.univibe.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,13 +22,28 @@ class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
+    companion object {
+        private const val TAG = "AuthViewModel"
+    }
+
     // UI state
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
     // UI events (one-shot) for navigation, to be observed by the NavigationWrapper
-    private val _uiEvent = MutableSharedFlow<AuthUiEvent>()
-    val uiEvent: SharedFlow<AuthUiEvent> = _uiEvent.asSharedFlow()
+    private val _uiEvent = MutableSharedFlow<AuthEvent>(replay = 1)
+    val uiEvent: SharedFlow<AuthEvent> = _uiEvent.asSharedFlow()
+
+    init {
+        // Comprobar si ya existe un usuario autenticado al iniciar
+        val currentUser: User? = authRepository.getCurrentUser()
+        if (currentUser != null) {
+            Log.d(TAG, "init: current user exists -> navigating to home")
+            _uiState.update { it.copy(user = currentUser, isAuthenticated = true) }
+            // emitir evento de navegación en coroutine
+            viewModelScope.launch { _uiEvent.emit(AuthEvent.NavigateToHome) }
+        }
+    }
 
     fun onEmailChange(email: String) {
         _uiState.update { it.copy(email = email) }
@@ -52,17 +69,29 @@ class AuthViewModel @Inject constructor(
                         )
                     }
                     // Emitir evento de navegación a home
-                    _uiEvent.emit(AuthUiEvent.NavigateToHome)
+                    Log.d(TAG, "onSignInClick: sign-in success, emitting NavigateToHome")
+                    _uiEvent.emit(AuthEvent.NavigateToHome)
                 }
+
                 is AuthResult.Error -> {
+                    Log.d(TAG, "onSignInClick: sign-in error = ${result.message}")
                     _uiState.update { it.copy(isLoading = false, error = result.message) }
                 }
+
                 is AuthResult.Loading -> {
                     _uiState.update { it.copy(isLoading = true) }
                 }
+
                 is AuthResult.Unauthenticated -> {
-                    _uiState.update { it.copy(isLoading = false, user = null, isAuthenticated = false) }
-                    _uiEvent.emit(AuthUiEvent.NavigateToAuth)
+                    Log.d(TAG, "onSignInClick: unauthenticated")
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            user = null,
+                            isAuthenticated = false
+                        )
+                    }
+                    _uiEvent.emit(AuthEvent.NavigateToAuth)
                 }
             }
         }
@@ -84,25 +113,33 @@ class AuthViewModel @Inject constructor(
                         )
                     }
                     // Emitir evento de navegación a home
-                    _uiEvent.emit(AuthUiEvent.NavigateToHome)
+                    Log.d(TAG, "onSignUpClick: sign-up success, emitting NavigateToHome")
+                    _uiEvent.emit(AuthEvent.NavigateToHome)
                 }
+
                 is AuthResult.Error -> {
+                    Log.d(TAG, "onSignUpClick: sign-up error = ${result.message}")
                     _uiState.update { it.copy(isLoading = false, error = result.message) }
                 }
+
                 is AuthResult.Loading -> {
                     _uiState.update { it.copy(isLoading = true) }
                 }
+
                 is AuthResult.Unauthenticated -> {
-                    _uiState.update { it.copy(isLoading = false, user = null, isAuthenticated = false) }
-                    _uiEvent.emit(AuthUiEvent.NavigateToAuth)
+                    Log.d(TAG, "onSignUpClick: unauthenticated")
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            user = null,
+                            isAuthenticated = false
+                        )
+                    }
+                    _uiEvent.emit(AuthEvent.NavigateToAuth)
                 }
             }
         }
     }
 
-    // Eventos UI para navegación o acciones puntuales
-    sealed class AuthUiEvent {
-        object NavigateToHome : AuthUiEvent()
-        object NavigateToAuth : AuthUiEvent()
-    }
+
 }

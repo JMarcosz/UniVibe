@@ -5,11 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,30 +26,10 @@ import com.example.univibe.presentation.theme.TextGray
 
 @Composable
 fun AuthScreen(
-    navController: NavHostController,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    // Collect one-shot UI events from the ViewModel and navigate accordingly
-    LaunchedEffect(Unit) {
-        viewModel.uiEvent.collect { event ->
-            when (event) {
-                is AuthViewModel.AuthUiEvent.NavigateToHome -> {
-                    navController.navigate("home") {
-                        popUpTo("auth") { inclusive = true }
-                        launchSingleTop = true
-                    }
-                }
-                is AuthViewModel.AuthUiEvent.NavigateToAuth -> {
-                    navController.navigate("auth") {
-                        popUpTo("home") { inclusive = true }
-                        launchSingleTop = true
-                    }
-                }
-            }
-        }
-    }
 
     Column(
         modifier = Modifier
