@@ -1,3 +1,4 @@
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -60,7 +61,8 @@ dependencies {
     implementation(libs.firebase.firestore)
 
     implementation(libs.hilt.android)
-    implementation(libs.hilt.compiler)
+    implementation (libs.androidx.hilt.navigation.compose)
+    ksp(libs.hilt.compiler)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)

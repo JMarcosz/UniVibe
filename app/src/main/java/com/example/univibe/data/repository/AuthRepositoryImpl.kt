@@ -3,7 +3,6 @@ package com.example.univibe.data.repository
 import com.example.univibe.domain.model.AuthResult
 import com.example.univibe.domain.model.User
 import com.example.univibe.domain.repository.AuthRepository
-import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider

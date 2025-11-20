@@ -1,37 +1,22 @@
-package com.example.univibe.presentation.initial
+package com.example.univibe.presentation.auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.univibe.R
@@ -42,9 +27,31 @@ import com.example.univibe.presentation.theme.TextGray
 
 
 @Composable
-fun InitialScreen() {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+fun AuthScreen(
+    navController: NavHostController,
+    viewModel: AuthViewModel = hiltViewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    // Collect one-shot UI events from the ViewModel and navigate accordingly
+    LaunchedEffect(Unit) {
+        viewModel.uiEvent.collect { event ->
+            when (event) {
+                is AuthViewModel.AuthUiEvent.NavigateToHome -> {
+                    navController.navigate("home") {
+                        popUpTo("auth") { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+                is AuthViewModel.AuthUiEvent.NavigateToAuth -> {
+                    navController.navigate("auth") {
+                        popUpTo("home") { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -69,8 +76,8 @@ fun InitialScreen() {
         )
         Spacer(modifier = Modifier.height(16.dp))
         TextField(
-            value = email,
-            onValueChange = { email = it },
+            value = uiState.email,
+            onValueChange = { viewModel.onEmailChange(it) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp),
@@ -85,8 +92,8 @@ fun InitialScreen() {
 
         Spacer(modifier = Modifier.height(16.dp))
         TextField(
-            value = password,
-            onValueChange = { password = it },
+            value = uiState.password,
+            onValueChange = { viewModel.onPasswordChange(it) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 32.dp),
@@ -110,7 +117,7 @@ fun InitialScreen() {
             Text(text = "Olvidaste tu contraseña?", color = TextGray, fontWeight = FontWeight.Bold)
 
             Button(
-                onClick = {},
+                onClick = { viewModel.onSignInClick() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(40.dp),
@@ -128,7 +135,7 @@ fun InitialScreen() {
         }
         Spacer(modifier = Modifier.height(32.dp))
         Button(
-            onClick = {},
+            onClick = { viewModel.onSignUpClick() },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(50.dp)
@@ -148,16 +155,18 @@ fun InitialScreen() {
             Text(text = "Google")
         }
 
-        Spacer(modifier = Modifier.weight(1f))
-        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(
-                text = "¿Aún no tienes una cuenta?",
-                color = TextGray,
-                fontWeight = FontWeight.Bold
-            )
-            Text(text = "Registrate")
+        // mostrar error desde el ViewModel
+        uiState.error?.let {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(text = it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(horizontal = 32.dp))
         }
 
         Spacer(modifier = Modifier.weight(1f))
+
+        if (uiState.isLoading) {
+            CircularProgressIndicator()
+            Spacer(modifier = Modifier.weight(1f))
+        }
+
     }
 }
