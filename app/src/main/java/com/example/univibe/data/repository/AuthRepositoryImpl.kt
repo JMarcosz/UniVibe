@@ -6,6 +6,9 @@ import com.example.univibe.domain.repository.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -65,10 +68,6 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getCurrentUser(): User? {
-        return firebaseAuth.currentUser?.toDomainUser()
-    }
-
     private fun FirebaseUser.toDomainUser(): User {
         return User(
             userId = this.uid,
@@ -76,4 +75,12 @@ class AuthRepositoryImpl @Inject constructor(
             displayName = this.displayName
         )
     }
+    override fun isAuthenticatedFlow(): Flow<Boolean> = callbackFlow {
+        val listener = FirebaseAuth.AuthStateListener { auth ->
+            trySend(auth.currentUser != null)
+        }
+        firebaseAuth.addAuthStateListener(listener)
+        awaitClose { firebaseAuth.removeAuthStateListener(listener) }
+    }
+
 }

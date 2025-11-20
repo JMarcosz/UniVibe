@@ -11,10 +11,14 @@ import androidx.navigation.compose.rememberNavController
 import com.example.univibe.base.Navigation.NavigationWrapper
 import com.example.univibe.presentation.theme.UniVibeTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+import com.example.univibe.domain.repository.AuthRepository
 
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var authRepository: AuthRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +30,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NavigationWrapper(navHostController)
+                    NavigationWrapper(navHostController, authRepository)
                 }
             }
         }

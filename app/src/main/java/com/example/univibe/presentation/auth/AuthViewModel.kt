@@ -22,28 +22,10 @@ class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    companion object {
-        private const val TAG = "AuthViewModel"
-    }
-
-    // UI state
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
-
-    // UI events (one-shot) for navigation, to be observed by the NavigationWrapper
     private val _uiEvent = MutableSharedFlow<AuthEvent>(replay = 1)
     val uiEvent: SharedFlow<AuthEvent> = _uiEvent.asSharedFlow()
-
-    init {
-        // Comprobar si ya existe un usuario autenticado al iniciar
-        val currentUser: User? = authRepository.getCurrentUser()
-        if (currentUser != null) {
-            Log.d(TAG, "init: current user exists -> navigating to home")
-            _uiState.update { it.copy(user = currentUser, isAuthenticated = true) }
-            // emitir evento de navegación en coroutine
-            viewModelScope.launch { _uiEvent.emit(AuthEvent.NavigateToHome) }
-        }
-    }
 
     fun onEmailChange(email: String) {
         _uiState.update { it.copy(email = email) }
@@ -68,13 +50,10 @@ class AuthViewModel @Inject constructor(
                             error = null
                         )
                     }
-                    // Emitir evento de navegación a home
-                    Log.d(TAG, "onSignInClick: sign-in success, emitting NavigateToHome")
                     _uiEvent.emit(AuthEvent.NavigateToHome)
                 }
 
                 is AuthResult.Error -> {
-                    Log.d(TAG, "onSignInClick: sign-in error = ${result.message}")
                     _uiState.update { it.copy(isLoading = false, error = result.message) }
                 }
 
@@ -83,7 +62,6 @@ class AuthViewModel @Inject constructor(
                 }
 
                 is AuthResult.Unauthenticated -> {
-                    Log.d(TAG, "onSignInClick: unauthenticated")
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -112,13 +90,10 @@ class AuthViewModel @Inject constructor(
                             error = null
                         )
                     }
-                    // Emitir evento de navegación a home
-                    Log.d(TAG, "onSignUpClick: sign-up success, emitting NavigateToHome")
                     _uiEvent.emit(AuthEvent.NavigateToHome)
                 }
 
                 is AuthResult.Error -> {
-                    Log.d(TAG, "onSignUpClick: sign-up error = ${result.message}")
                     _uiState.update { it.copy(isLoading = false, error = result.message) }
                 }
 
@@ -127,7 +102,6 @@ class AuthViewModel @Inject constructor(
                 }
 
                 is AuthResult.Unauthenticated -> {
-                    Log.d(TAG, "onSignUpClick: unauthenticated")
                     _uiState.update {
                         it.copy(
                             isLoading = false,
@@ -140,6 +114,5 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
-
 
 }
