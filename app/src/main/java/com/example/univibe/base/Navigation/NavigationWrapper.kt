@@ -1,7 +1,6 @@
 package com.example.univibe.base.Navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -12,7 +11,10 @@ import com.example.univibe.presentation.auth.AuthScreen
 import com.example.univibe.presentation.auth.AuthViewModel
 import com.example.univibe.presentation.home.HomeScreen
 import com.example.univibe.domain.repository.AuthRepository
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.distinctUntilChanged
+import androidx.compose.runtime.LaunchedEffect
 
 
 @Composable
@@ -33,19 +35,12 @@ fun NavigationWrapper(
             HomeScreen()
         }
     }
-
-    LaunchedEffect(isAuthenticated) {
-        navHostController.navigate(startDestination) {
-            navHostController.graph.startDestinationRoute?.let { startRoute ->
-                popUpTo(startRoute) { inclusive = true }
-            }
-            launchSingleTop = true
-        }
-    }
-
-    // Listen for navigation events emitted from ViewModels (via NavigationManager)
     LaunchedEffect(Unit) {
-        NavigationManager.events.collect { route ->
+        val authFlow = authRepository.isAuthenticatedFlow()
+            .distinctUntilChanged()
+            .map { isAuth -> if (isAuth) NavRoute.Home else NavRoute.Auth }
+
+        merge(authFlow, NavigationManager.events).collect { route ->
             navHostController.navigate(route.route) {
                 navHostController.graph.startDestinationRoute?.let { startRoute ->
                     popUpTo(startRoute) { inclusive = true }
