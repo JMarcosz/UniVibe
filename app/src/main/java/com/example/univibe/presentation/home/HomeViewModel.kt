@@ -20,7 +20,6 @@ class HomeViewModel @Inject constructor(
 
     fun onSignOutClick() {
         viewModelScope.launch {
-            Log.d(TAG, "onSignOutClick: calling signOutUseCase")
             val result = signOutUseCase()
             when (result) {
                 is AuthResult.Unauthenticated -> {

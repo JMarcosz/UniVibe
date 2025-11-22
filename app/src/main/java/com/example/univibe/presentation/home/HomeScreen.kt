@@ -131,7 +131,7 @@ fun HomeScreen() {
                             color = Color.Gray
                         )
                         Text(
-                            text = "jeanmarte22@gmail.com",
+                            text = "jeanmaicol2225@gmail.com",
                             style = MaterialTheme.typography.bodyMedium
                         )
 
