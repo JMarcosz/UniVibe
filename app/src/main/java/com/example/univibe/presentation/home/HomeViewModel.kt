@@ -13,26 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val signOutUseCase: SignOutUseCase
+//    private val signOutUseCase: SignOutUseCase
 ) : ViewModel() {
 
-    companion object { private const val TAG = "HomeViewModel" }
-
-    fun onSignOutClick() {
-        viewModelScope.launch {
-            val result = signOutUseCase()
-            when (result) {
-                is AuthResult.Unauthenticated -> {
-                    Log.d(TAG, "onSignOutClick: sign out successful, navigating to auth via NavigationManager")
-                    NavigationManager.navigateTo(NavRoute.Auth)
-                }
-                is AuthResult.Error -> {
-                    Log.d(TAG, "onSignOutClick: sign out error: ${result.message}")
-                }
-                else -> {
-                    Log.d(TAG, "onSignOutClick: unexpected sign out result: $result")
-                }
-            }
-        }
-    }
 }
