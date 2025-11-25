@@ -72,6 +72,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "987165746678-ns1srk4fgr0n7vf02alt0dbsbki72ai4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.univibe",
+            "certificate_hash": "3f2e2aea67136a181c18488fe4cba05a630bb561"
+          }
+        },
+        {
           "client_id": "987165746678-rnbogu33661bkomk5iq2ti0rke0v2inc.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
