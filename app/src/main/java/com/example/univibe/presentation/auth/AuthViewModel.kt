@@ -5,8 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.univibe.base.Navigation.NavigationManager
 import com.example.univibe.base.Navigation.NavRoute
 import com.example.univibe.domain.model.AuthResult
-import com.example.univibe.domain.repository.AuthRepository
-import com.example.univibe.domain.use_case.SignInWithGoogleUseCase
+import com.example.univibe.domain.use_case.Auth.SignInUseCase
+import com.example.univibe.domain.use_case.Account.SignUpUseCase
+import com.example.univibe.domain.use_case.Auth.SignInWithGoogleUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
+    private val signInUseCase: SignInUseCase,
+    private val signUpUseCase: SignUpUseCase,
     private val signInWithGoogleUseCase: SignInWithGoogleUseCase
 ) : ViewModel() {
 
@@ -35,80 +37,16 @@ class AuthViewModel @Inject constructor(
     fun onSignInClick() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
-            val result = authRepository.signIn(uiState.value.email, uiState.value.password)
-            when (result) {
-                is AuthResult.Success -> {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            user = result.user,
-                            isAuthenticated = true,
-                            password = "",
-                            error = null
-                        )
-                    }
-                    NavigationManager.navigateTo(NavRoute.Home)
-                }
-
-                is AuthResult.Error -> {
-                    _uiState.update { it.copy(isLoading = false, error = result.message) }
-                }
-
-                is AuthResult.Loading -> {
-                    _uiState.update { it.copy(isLoading = true) }
-                }
-
-                is AuthResult.Unauthenticated -> {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            user = null,
-                            isAuthenticated = false
-                        )
-                    }
-                    NavigationManager.navigateTo(NavRoute.Auth)
-                }
-            }
+            val result = signInUseCase(uiState.value.email, uiState.value.password)
+            handleAuthResult(result)
         }
     }
 
     fun onSignUpClick() {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
-            val result = authRepository.signUp(uiState.value.email, uiState.value.password)
-            when (result) {
-                is AuthResult.Success -> {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            user = result.user,
-                            isAuthenticated = true,
-                            password = "",
-                            error = null
-                        )
-                    }
-                    NavigationManager.navigateTo(NavRoute.Home)
-                }
-
-                is AuthResult.Error -> {
-                    _uiState.update { it.copy(isLoading = false, error = result.message) }
-                }
-
-                is AuthResult.Loading -> {
-                    _uiState.update { it.copy(isLoading = true) }
-                }
-
-                is AuthResult.Unauthenticated -> {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            user = null,
-                            isAuthenticated = false
-                        )
-                    }
-                    NavigationManager.navigateTo(NavRoute.Auth)
-                }
-            }
+            val result = signUpUseCase(uiState.value.email, uiState.value.password)
+            handleAuthResult(result)
         }
     }
 
@@ -116,39 +54,45 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             val result = signInWithGoogleUseCase(idToken)
-            when (result) {
-                is AuthResult.Success -> {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            user = result.user,
-                            isAuthenticated = true,
-                            error = null
-                        )
-                    }
-                    NavigationManager.navigateTo(NavRoute.Home)
-                }
-
-                is AuthResult.Error -> {
-                    _uiState.update { it.copy(isLoading = false, error = result.message) }
-                }
-
-                is AuthResult.Loading -> {
-                    _uiState.update { it.copy(isLoading = true) }
-                }
-
-                is AuthResult.Unauthenticated -> {
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            user = null,
-                            isAuthenticated = false
-                        )
-                    }
-                    NavigationManager.navigateTo(NavRoute.Auth)
-                }
-            }
+            handleAuthResult(result)
         }
     }
 
+    private suspend fun handleAuthResult(result: AuthResult) {
+        when (result) {
+            is AuthResult.Success -> {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        user = result.user,
+                        isAuthenticated = true,
+                        password = "",
+                        error = null
+                    )
+                }
+                NavigationManager.navigateTo(NavRoute.Home)
+            }
+
+            is AuthResult.Error -> {
+                _uiState.update { it.copy(isLoading = false, error = result.message) }
+            }
+
+            is AuthResult.Loading -> {
+                _uiState.update { it.copy(isLoading = true) }
+            }
+
+            is AuthResult.Unauthenticated -> {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        user = null,
+                        isAuthenticated = false
+                    )
+                }
+                NavigationManager.navigateTo(NavRoute.Auth)
+            }
+        }
+    }
 }
+
+

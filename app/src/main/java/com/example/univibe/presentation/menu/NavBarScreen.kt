@@ -6,10 +6,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
@@ -27,6 +25,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
+/**
+ * Barra de navegación inferior (tabs) que se desacopla de estado local y
+ * utiliza la ruta actual del NavHostController para determinar el tab activo.
+ * - Cada tab muestra un pequeño indicador superior cuando está activo.
+ * - Al hacer click navega a la ruta asociada y usa launchSingleTop.
+ */
 @Composable
 fun NavBarScreen(
     navController: NavHostController,
@@ -34,6 +38,7 @@ fun NavBarScreen(
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
+
     val items = NavTabs.mainTabs()
 
     Row(
@@ -63,8 +68,9 @@ fun NavBarScreen(
                         }
                     },
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top)
+                verticalArrangement = Arrangement.Center
             ) {
+                // Indicador superior
                 Box(
                     modifier = Modifier
                         .width(36.dp)
@@ -73,6 +79,7 @@ fun NavBarScreen(
                             color = if (selected) Color.Black else Color.Transparent,
                         )
                 )
+
                 Icon(
                     painter = painterResource(id = item.iconRes),
                     contentDescription = item.label,
@@ -80,14 +87,13 @@ fun NavBarScreen(
                     modifier = Modifier
                         .size(28.dp)
                 )
+
                 Text(
                     text = item.label,
                     fontSize = 12.sp,
                     textAlign = TextAlign.Center,
                     color = if (selected) Color.Black else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                 )
-
-                Spacer(modifier = Modifier.height(4.dp))
             }
         }
     }

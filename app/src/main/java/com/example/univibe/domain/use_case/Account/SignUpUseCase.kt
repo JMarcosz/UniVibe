@@ -1,4 +1,4 @@
-package com.example.univibe.domain.use_case
+package com.example.univibe.domain.use_case.Account
 
 import com.example.univibe.domain.repository.AuthRepository
 import javax.inject.Inject

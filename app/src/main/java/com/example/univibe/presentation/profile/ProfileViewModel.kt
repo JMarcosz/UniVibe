@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.univibe.base.Navigation.NavRoute
 import com.example.univibe.base.Navigation.NavigationManager
 import com.example.univibe.domain.model.AuthResult
-import com.example.univibe.domain.use_case.SignOutUseCase
+import com.example.univibe.domain.use_case.Auth.SignOutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

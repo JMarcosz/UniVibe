@@ -3,7 +3,10 @@ package com.example.univibe.presentation.menu
 import com.example.univibe.R
 import com.example.univibe.base.Navigation.NavRoute
 
-
+/**
+ * Modelo para representar un tab del NavBar.
+ * Mantener aquí la definición permite añadir propiedades (badge, visible, order, meta) sin tocar el UI.
+ */
 data class NavTab(
     val route: String,
     val iconRes: Int,
