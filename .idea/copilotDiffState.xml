@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/example/univibe/domain/use_case/User/GetCurrentUserUseCase.kt">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/app/src/main/java/com/example/univibe/domain/use_case/User/GetCurrentUserUseCase.kt" />
+              <option name="updatedContent" value="package com.example.univibe.domain.use_case.User&#10;&#10;import com.example.univibe.domain.model.User&#10;import com.example.univibe.domain.repository.UserRepository&#10;import kotlinx.coroutines.flow.Flow&#10;import javax.inject.Inject&#10;&#10;class GetCurrentUserUseCase @Inject constructor(&#10;    private val repository: UserRepository&#10;) {&#10;    operator fun invoke(): Flow&lt;User?&gt; {&#10;        return repository.getCurrentUser()&#10;    }&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/example/univibe/domain/use_case/User/UpdateUserProfileUseCase.kt">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/app/src/main/java/com/example/univibe/domain/use_case/User/UpdateUserProfileUseCase.kt" />
+              <option name="updatedContent" value="package com.example.univibe.domain.use_case.User&#10;&#10;import com.example.univibe.domain.model.User&#10;import com.example.univibe.domain.repository.UserRepository&#10;import javax.inject.Inject&#10;&#10;class UpdateUserProfileUseCase @Inject constructor(&#10;    private val repository: UserRepository&#10;) {&#10;    suspend operator fun invoke(user: User): Result&lt;Unit&gt; {&#10;        // Validaciones antes de actualizar&#10;        if (user.firstName.isBlank()) {&#10;            return Result.failure(Exception(&quot;El nombre es requerido&quot;))&#10;        }&#10;        if (user.lastName.isBlank()) {&#10;            return Result.failure(Exception(&quot;El apellido es requerido&quot;))&#10;        }&#10;        if (user.email.isBlank()) {&#10;            return Result.failure(Exception(&quot;El email es requerido&quot;))&#10;        }&#10;        &#10;        return repository.updateUserProfile(user)&#10;    }&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

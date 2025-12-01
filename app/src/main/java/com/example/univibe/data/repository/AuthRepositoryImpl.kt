@@ -71,8 +71,12 @@ class AuthRepositoryImpl @Inject constructor(
     private fun FirebaseUser.toDomainUser(): User {
         return User(
             userId = this.uid,
-            email = this.email,
-            displayName = this.displayName
+            email = this.email ?: "",
+            firstName = "",
+            lastName = "",
+            phone = "",
+            photoUrl = this.photoUrl?.toString() ?: "",
+            displayName = this.displayName ?: ""
         )
     }
     override fun isAuthenticatedFlow(): Flow<Boolean> = callbackFlow {

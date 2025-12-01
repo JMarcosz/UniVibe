@@ -1,5 +1,6 @@
 package com.example.univibe.base
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,6 +14,7 @@ import com.example.univibe.presentation.theme.UniVibeTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import com.example.univibe.domain.repository.AuthRepository
+import com.example.univibe.util.DeepLinkHandler
 
 
 @AndroidEntryPoint
@@ -22,6 +24,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        handleIntent(intent)
         setContent {
             val navHostController = rememberNavController()
 
@@ -32,6 +35,21 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavigationWrapper(navHostController, authRepository)
                 }
+            }
+        }
+    }
+
+    // --- CORRECCIÓN AQUÍ ---
+    override fun onNewIntent(intent: Intent) { // 1. Cambiado de Intent? a Intent
+        super.onNewIntent(intent)              // 2. Añadida la llamada a super
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        intent?.data?.let { uri ->
+            if (uri.scheme == "univibe" && uri.host == "event") {
+                val eventId = uri.lastPathSegment
+                DeepLinkHandler.setEventId(eventId)
             }
         }
     }

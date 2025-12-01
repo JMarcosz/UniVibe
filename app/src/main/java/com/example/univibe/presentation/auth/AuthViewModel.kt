@@ -5,9 +5,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.univibe.base.Navigation.NavigationManager
 import com.example.univibe.base.Navigation.NavRoute
 import com.example.univibe.domain.model.AuthResult
-import com.example.univibe.domain.use_case.Auth.SignInUseCase
-import com.example.univibe.domain.use_case.Account.SignUpUseCase
-import com.example.univibe.domain.use_case.Auth.SignInWithGoogleUseCase
+import com.example.univibe.domain.use_case.auth.SignInUseCase
+import com.example.univibe.domain.use_case.account.SignUpUseCase
+import com.example.univibe.domain.use_case.auth.SignInWithGoogleUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

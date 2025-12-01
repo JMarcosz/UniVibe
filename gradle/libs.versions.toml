@@ -45,6 +45,7 @@ firebase-crashlytics-ktx = { module = "com.google.firebase:firebase-crashlytics-
 firebase-auth = {module = "com.google.firebase:firebase-auth-ktx"}
 androidx-navigation-compose = {module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose"}
 firebase-firestore = {module = "com.google.firebase:firebase-firestore"}
+firebase-storage = {module = "com.google.firebase:firebase-storage-ktx"}
 
 
 

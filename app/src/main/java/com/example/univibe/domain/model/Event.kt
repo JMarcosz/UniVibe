@@ -11,5 +11,6 @@ data class Event(
     val category: String = "",
     val location: String = "",
     val qrCodeUrl: String = "",
-    val likes: Map<String, Boolean> = emptyMap()
+    val likes: Map<String, Boolean> = emptyMap(),
+    val subscriptions: Map<String, Boolean> = emptyMap()
 )

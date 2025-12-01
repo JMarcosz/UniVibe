@@ -8,4 +8,6 @@ interface EventRepository {
     fun getEvents(): Flow<List<Event>>
     suspend fun addEvent(event: Event): Result<Unit>
     suspend fun toggleLike(eventId: String): Result<Unit>
+    suspend fun toggleSubscription(eventId: String): Result<Unit>
+    suspend fun seedInitialEvents(): Result<Unit>
 }

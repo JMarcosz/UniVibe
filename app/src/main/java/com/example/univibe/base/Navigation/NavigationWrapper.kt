@@ -21,12 +21,14 @@ import androidx.compose.runtime.remember
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.padding
+import com.example.univibe.presentation.find_event.FindEventScreen
 import com.example.univibe.presentation.profile.ProfileScreen
 
 @Composable
 fun NavigationWrapper(
     navHostController: NavHostController,
-    authRepository: AuthRepository
+    authRepository: AuthRepository,
+    deepLinkEventId: String? = null
 ) {
 
     val isAuthenticated by authRepository.isAuthenticatedFlow().collectAsState(initial = false)
@@ -51,10 +53,10 @@ fun NavigationWrapper(
                 AuthScreen(viewModel = authViewModel)
             }
             composable(NavRoute.Home.route) {
-                HomeScreen()
+                HomeScreen(deepLinkEventId = deepLinkEventId)
             }
             // Nota: rutas Find/Notes/Profile deben ser manejadas por sus respectivos screens cuando se implementen
-            composable(NavRoute.Find.route) { /* TODO: FindScreen() */ }
+            composable(NavRoute.Find.route) { FindEventScreen() }
             composable(NavRoute.Notes.route) { /* TODO: NotesScreen() */ }
             composable(NavRoute.Profile.route) {
                 ProfileScreen()

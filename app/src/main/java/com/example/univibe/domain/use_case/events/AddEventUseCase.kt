@@ -1,4 +1,4 @@
-package com.example.univibe.domain.use_case.Events
+package com.example.univibe.domain.use_case.events
 
 import com.example.univibe.domain.model.Event
 import com.example.univibe.domain.repository.EventRepository

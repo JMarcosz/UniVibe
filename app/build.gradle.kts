@@ -58,9 +58,17 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.firebase.firestore)
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation(libs.firebase.storage)
 
     // Google Sign-In
     implementation(libs.play.services.auth)
+
+    // Coil para cargar imágenes
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
+    // ZXing para generación de códigos QR
+    implementation("com.google.zxing:core:3.5.2")
 
     implementation(libs.hilt.android)
     implementation (libs.androidx.hilt.navigation.compose)
