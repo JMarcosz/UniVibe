@@ -1,5 +1,6 @@
-package com.example.univibe.presentation.events.modal
+package com.example.univibe.presentation.components.event.modal
 
+import android.graphics.Bitmap
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,6 +14,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.univibe.domain.model.Event
 import com.example.univibe.presentation.components.*
+import com.example.univibe.presentation.components.event.EventHeaderSection
+import com.example.univibe.presentation.components.event.EventInfoCard
 import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
 import java.util.*
@@ -66,7 +69,7 @@ fun EventDetailDialog(
 @Composable
 private fun EventDetailContent(
     event: Event,
-    qrBitmap: android.graphics.Bitmap?,
+    qrBitmap: Bitmap?,
     currentUserId: String?,
     onLikeClick: () -> Unit,
     onSubscribeClick: () -> Unit,
@@ -105,7 +108,7 @@ private fun EventDetailContent(
 private fun EventDetailsSection(
     event: Event,
     dateFormat: SimpleDateFormat,
-    qrBitmap: android.graphics.Bitmap?,
+    qrBitmap: Bitmap?,
     isLiked: Boolean,
     isSubscribed: Boolean,
     onLikeClick: () -> Unit,
@@ -115,54 +118,14 @@ private fun EventDetailsSection(
     Column(
         modifier = Modifier.padding(24.dp)
     ) {
-        EventDescription(description = event.description)
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        EventInformation(
-            event = event,
-            dateFormat = dateFormat
+        Text(
+            text = event.description,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        QrCodeSection(qrBitmap = qrBitmap)
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        EventActionButtons(
-            isLiked = isLiked,
-            isSubscribed = isSubscribed,
-            onLikeClick = onLikeClick,
-            onSubscribeClick = onSubscribeClick
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        DismissButton(onClick = onDismiss)
-    }
-}
-
-@Composable
-private fun EventDescription(
-    description: String,
-    modifier: Modifier = Modifier
-) {
-    Text(
-        text = description,
-        style = MaterialTheme.typography.bodyLarge,
-        color = MaterialTheme.colorScheme.onSurface,
-        modifier = modifier
-    )
-}
-
-@Composable
-private fun EventInformation(
-    event: Event,
-    dateFormat: SimpleDateFormat,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier) {
         EventInfoCard(
             icon = Icons.Default.LocationOn,
             label = "Ubicación",
@@ -180,19 +143,28 @@ private fun EventInformation(
             label = "Fecha de cierre",
             value = dateFormat.format(event.closingDate.toDate())
         )
-    }
-}
 
-@Composable
-private fun DismissButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TextButton(
-        onClick = onClick,
-        modifier = modifier.fillMaxWidth()
-    ) {
-        Text("Cerrar")
+        Spacer(modifier = Modifier.height(24.dp))
+
+        QrCodeSection(qrBitmap = qrBitmap)
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        EventActionButtons(
+            isLiked = isLiked,
+            isSubscribed = isSubscribed,
+            onLikeClick = onLikeClick,
+            onSubscribeClick = onSubscribeClick
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextButton(
+            onClick = onDismiss,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Cerrar")
+        }
     }
 }
 

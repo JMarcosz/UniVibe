@@ -1,4 +1,4 @@
-package com.example.univibe.presentation.components
+package com.example.univibe.presentation.components.event
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

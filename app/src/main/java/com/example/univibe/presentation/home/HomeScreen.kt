@@ -14,6 +14,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.univibe.presentation.components.event.modal.EventDetailDialog
+import com.example.univibe.presentation.components.event.FavoritesSection
+import com.example.univibe.presentation.components.event.SuggestionsSection
 
 @Composable
 fun HomeScreen(deepLinkEventId: String? = null) {
@@ -24,7 +27,6 @@ fun HomeScreen(deepLinkEventId: String? = null) {
     val selectedEvent by viewModel.selectedEvent.collectAsState()
     val isSubscribed by viewModel.isSubscribed.collectAsState()
 
-    // Crear set de IDs de eventos favoritos para verificación rápida
     val favoriteEventIds = favoriteEvents.map { it.id }.toSet()
     val subscribedEventIds = isSubscribed.filterValues { it }.keys
 
@@ -78,17 +80,10 @@ fun HomeScreen(deepLinkEventId: String? = null) {
                 }
             }
         }
-
-        // Modal de detalles del evento
-        if (selectedEvent != null) {
-            EventDetailModal(
-                event = selectedEvent,
-                isFavorite = selectedEvent?.id in favoriteEventIds,
-                isSubscribed = selectedEvent?.id in subscribedEventIds,
-                isProcessing = selectedEvent?.id in uiState.processingEventIds,
-                onDismiss = viewModel::closeModal,
-                onLikeClick = viewModel::toggleLike,
-                onSubscribeClick = viewModel::toggleSubscription
+        selectedEvent?.let { event ->
+            EventDetailDialog(
+                eventId = event.id,
+                onDismiss = viewModel::closeModal
             )
         }
     }

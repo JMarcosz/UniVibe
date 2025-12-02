@@ -1,4 +1,4 @@
-package com.example.univibe.presentation.events.modal
+package com.example.univibe.presentation.components.event.modal
 
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
@@ -30,7 +30,8 @@ class EventDetailViewModel @Inject constructor(
             getEventsUseCase().collect { events ->
                 val event = events.find { it.id == eventId }
                 if (event != null) {
-                    val qrBitmap = QrCodeGenerator.generateQrCode(event.qrCodeUrl)
+                    // Genera QR con el ID del evento (no con la URL)
+                    val qrBitmap = QrCodeGenerator.generateQrCode(eventId)
                     _uiState.value = EventDetailUiState.Success(event, qrBitmap)
                 } else {
                     _uiState.value = EventDetailUiState.Error("Evento no encontrado")
@@ -52,8 +53,9 @@ class EventDetailViewModel @Inject constructor(
     }
 }
 
+
 sealed class EventDetailUiState {
-    object Loading : EventDetailUiState()
+    data object Loading : EventDetailUiState()
     data class Success(val event: Event, val qrBitmap: Bitmap?) : EventDetailUiState()
     data class Error(val message: String) : EventDetailUiState()
 }

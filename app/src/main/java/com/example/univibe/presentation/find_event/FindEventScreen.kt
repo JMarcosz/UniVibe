@@ -26,11 +26,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.univibe.domain.model.Event
-import com.example.univibe.presentation.home.EventCard
-import com.example.univibe.presentation.home.EventDetailModal
+import com.example.univibe.presentation.components.event.EventCard
+import com.example.univibe.presentation.components.event.modal.EventDetailDialog
+import com.example.univibe.presentation.theme.TextGray
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -48,6 +51,7 @@ fun FindEventScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
+            Text(text = "Encuentra un evento", fontWeight = FontWeight.Bold, fontSize = 24.sp, color = TextGray, modifier = Modifier.padding(vertical = 16.dp))
             // Barra de búsqueda
             SearchBar(
                 query = uiState.searchQuery,
@@ -129,14 +133,9 @@ fun FindEventScreen(
 
         // Modal de detalles del evento
         selectedEvent?.let { event ->
-            EventDetailModal(
-                event = event,
-                isFavorite = viewModel.isFavorite(event),
-                isSubscribed = viewModel.isSubscribed(event.id),
-                isProcessing = event.id in uiState.processingEventIds,
-                onDismiss = viewModel::closeModal,
-                onLikeClick = viewModel::toggleLike,
-                onSubscribeClick = viewModel::toggleSubscription
+            EventDetailDialog(
+                eventId = event.id,
+                onDismiss = viewModel::closeModal
             )
         }
     }

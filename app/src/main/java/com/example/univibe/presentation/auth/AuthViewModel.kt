@@ -2,8 +2,8 @@ package com.example.univibe.presentation.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.univibe.base.navigation.NavigationManager
 import com.example.univibe.base.navigation.NavRoute
+import com.example.univibe.base.navigation.NavigationManager
 import com.example.univibe.domain.model.AuthResult
 import com.example.univibe.domain.use_case.auth.SignInUseCase
 import com.example.univibe.domain.use_case.account.SignUpUseCase
