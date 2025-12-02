@@ -1,7 +1,7 @@
 package com.example.univibe.presentation.menu
 
 import com.example.univibe.R
-import com.example.univibe.base.Navigation.NavRoute
+import com.example.univibe.base.navigation.NavRoute
 
 /**
  * Modelo para representar un tab del NavBar.
@@ -17,7 +17,7 @@ object NavTabs {
     fun mainTabs(): List<NavTab> = listOf(
         NavTab(route = NavRoute.Home.route, iconRes = R.drawable.home_icon, label = "INICIO"),
         NavTab(route = NavRoute.Find.route, iconRes = R.drawable.find_icon, label = "BUSCAR"),
-        NavTab(route = NavRoute.Notes.route, iconRes = R.drawable.notes_icon, label = "EVENTOS"),
+        NavTab(route = NavRoute.Events.route, iconRes = R.drawable.notes_icon, label = "EVENTOS"),
         NavTab(route = NavRoute.Profile.route, iconRes = R.drawable.profile_icon, label = "PERFIL")
     )
 }

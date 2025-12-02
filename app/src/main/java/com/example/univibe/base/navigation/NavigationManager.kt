@@ -1,4 +1,4 @@
-package com.example.univibe.base.Navigation
+package com.example.univibe.base.navigation
 
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow

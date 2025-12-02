@@ -4,8 +4,8 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.univibe.base.Navigation.NavRoute
-import com.example.univibe.base.Navigation.NavigationManager
+import com.example.univibe.base.navigation.NavRoute
+import com.example.univibe.base.navigation.NavigationManager
 import com.example.univibe.domain.model.AuthResult
 import com.example.univibe.domain.model.User
 import com.example.univibe.domain.use_case.auth.SignOutUseCase

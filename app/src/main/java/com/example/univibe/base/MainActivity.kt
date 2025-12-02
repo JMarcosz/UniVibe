@@ -9,7 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.example.univibe.base.Navigation.NavigationWrapper
+import com.example.univibe.base.navigation.NavigationWrapper
 import com.example.univibe.presentation.theme.UniVibeTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

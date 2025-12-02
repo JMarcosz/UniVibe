@@ -1,4 +1,4 @@
-package com.example.univibe.presentation.events.detail
+package com.example.univibe.presentation.events.modal
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState

@@ -1,4 +1,4 @@
-package com.example.univibe.base.Navigation
+package com.example.univibe.base.navigation
 
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.padding
+import com.example.univibe.presentation.events.EventScreen
 import com.example.univibe.presentation.find_event.FindEventScreen
 import com.example.univibe.presentation.profile.ProfileScreen
 
@@ -37,7 +38,7 @@ fun NavigationWrapper(
     // Decidir si mostrar la barra inferior según la ruta actual del NavController
     val backStackEntry by navHostController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
-    val bottomBarRoutes = remember { listOf(NavRoute.Home.route, NavRoute.Find.route, NavRoute.Notes.route, NavRoute.Profile.route) }
+    val bottomBarRoutes = remember { listOf(NavRoute.Home.route, NavRoute.Find.route, NavRoute.Events.route, NavRoute.Profile.route) }
     val showBottomBar = currentRoute != null && bottomBarRoutes.contains(currentRoute)
 
     Scaffold(
@@ -57,7 +58,7 @@ fun NavigationWrapper(
             }
             // Nota: rutas Find/Notes/Profile deben ser manejadas por sus respectivos screens cuando se implementen
             composable(NavRoute.Find.route) { FindEventScreen() }
-            composable(NavRoute.Notes.route) { /* TODO: NotesScreen() */ }
+            composable(NavRoute.Events.route) { EventScreen()}
             composable(NavRoute.Profile.route) {
                 ProfileScreen()
             }
