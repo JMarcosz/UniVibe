@@ -116,7 +116,7 @@ private fun EventDetailsSection(
     onDismiss: () -> Unit
 ) {
     Column(
-        modifier = Modifier.padding(24.dp)
+        modifier = Modifier.padding(12.dp).fillMaxSize()
     ) {
         Text(
             text = event.description,

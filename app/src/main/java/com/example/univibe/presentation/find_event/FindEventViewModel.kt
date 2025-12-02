@@ -6,13 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.univibe.domain.model.Event
 import com.example.univibe.domain.use_case.events.GetEventsUseCase
 import com.example.univibe.domain.use_case.events.SearchEventsUseCase
+import com.example.univibe.domain.use_case.events.ToggleEventSubscriptionUseCase
 import com.example.univibe.domain.use_case.events.ToggleLikeUseCase
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,6 +22,7 @@ class FindEventViewModel @Inject constructor(
     private val getEventsUseCase: GetEventsUseCase,
     private val searchEventsUseCase: SearchEventsUseCase,
     private val toggleLikeUseCase: ToggleLikeUseCase,
+    private val toggleSubscriptionUseCase: ToggleEventSubscriptionUseCase,
     private val auth: FirebaseAuth
 ) : ViewModel() {
 
@@ -36,13 +37,8 @@ class FindEventViewModel @Inject constructor(
     private val _selectedEvent = MutableStateFlow<Event?>(null)
     val selectedEvent: StateFlow<Event?> = _selectedEvent.asStateFlow()
 
-    // Mapa de suscripciones locales (eventId -> isSubscribed)
-    private val _subscriptions = MutableStateFlow<Map<String, Boolean>>(emptyMap())
-    val subscriptions: StateFlow<Map<String, Boolean>> = _subscriptions.asStateFlow()
-
     init {
         loadEvents()
-        observeSearchQuery()
     }
 
     private fun loadEvents() {
@@ -65,16 +61,6 @@ class FindEventViewModel @Inject constructor(
                         errorMessage = "Error al cargar eventos: ${e.message}"
                     )
                 }
-            }
-        }
-    }
-
-    private fun observeSearchQuery() {
-        viewModelScope.launch {
-            combine(_allEvents, _uiState) { events, state ->
-                events to state.searchQuery
-            }.collect { (events, query) ->
-                applySearch()
             }
         }
     }
@@ -136,12 +122,35 @@ class FindEventViewModel @Inject constructor(
     }
 
     fun toggleSubscription(eventId: String) {
-        _subscriptions.update { currentMap ->
-            val newMap = currentMap.toMutableMap()
-            val currentValue = newMap[eventId] ?: false
-            newMap[eventId] = !currentValue
-            Log.d("FindEventViewModel", "Suscripción toggleada: $eventId = ${!currentValue}")
-            newMap
+        viewModelScope.launch {
+            // Agregar a processingEventIds
+            _uiState.update {
+                it.copy(processingEventIds = it.processingEventIds + eventId)
+            }
+
+            try {
+                Log.d("FindEventViewModel", "Iniciando toggle subscription para evento: $eventId")
+                val result = toggleSubscriptionUseCase(eventId)
+
+                result.onSuccess {
+                    Log.d("FindEventViewModel", "Toggle subscription exitoso para evento: $eventId")
+                }.onFailure { error ->
+                    Log.e("FindEventViewModel", "Error al toggle subscription: ${error.message}")
+                    _uiState.update {
+                        it.copy(errorMessage = "Error al cambiar suscripción: ${error.message}")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("FindEventViewModel", "Excepción en toggleSubscription", e)
+                _uiState.update {
+                    it.copy(errorMessage = "Error al cambiar suscripción")
+                }
+            } finally {
+                // Remover de processingEventIds
+                _uiState.update {
+                    it.copy(processingEventIds = it.processingEventIds - eventId)
+                }
+            }
         }
     }
 
@@ -157,7 +166,10 @@ class FindEventViewModel @Inject constructor(
 
     // Helper para verificar si un evento está suscrito
     fun isSubscribed(eventId: String): Boolean {
-        return _subscriptions.value[eventId] ?: false
+        val currentUserId = auth.currentUser?.uid ?: return false
+        // Buscar el evento en la lista de eventos y verificar subscriptions
+        val event = _allEvents.value.find { it.id == eventId }
+        return event?.subscriptions?.containsKey(currentUserId) ?: false
     }
 }
 

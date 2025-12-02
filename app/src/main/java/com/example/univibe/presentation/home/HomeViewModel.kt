@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.univibe.domain.model.Event
 import com.example.univibe.domain.use_case.events.GetEventsUseCase
 import com.example.univibe.domain.use_case.events.SeedEventsUseCase
+import com.example.univibe.domain.use_case.events.ToggleEventSubscriptionUseCase
 import com.example.univibe.domain.use_case.events.ToggleLikeUseCase
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,6 +21,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val getEventsUseCase: GetEventsUseCase,
     private val toggleLikeUseCase: ToggleLikeUseCase,
+    private val toggleSubscriptionUseCase: ToggleEventSubscriptionUseCase,
     private val seedEventsUseCase: SeedEventsUseCase,
     private val auth: FirebaseAuth
 ) : ViewModel() {
@@ -35,9 +37,6 @@ class HomeViewModel @Inject constructor(
 
     private val _selectedEvent = MutableStateFlow<Event?>(null)
     val selectedEvent: StateFlow<Event?> = _selectedEvent.asStateFlow()
-
-    private val _isSubscribed = MutableStateFlow<Map<String, Boolean>>(emptyMap())
-    val isSubscribed: StateFlow<Map<String, Boolean>> = _isSubscribed.asStateFlow()
 
     // Variable para rastrear si ya se inicializaron los eventos
     private var isEventsInitialized = false
@@ -155,10 +154,35 @@ class HomeViewModel @Inject constructor(
     }
 
     fun toggleSubscription(eventId: String) {
-        _isSubscribed.update {
-            val newMap = it.toMutableMap()
-            newMap[eventId] = !(newMap[eventId] ?: false)
-            newMap
+        viewModelScope.launch {
+            // Agregar a processingEventIds
+            _uiState.update {
+                it.copy(processingEventIds = it.processingEventIds + eventId)
+            }
+
+            try {
+                Log.d("HomeViewModel", "Iniciando toggle subscription para evento: $eventId")
+                val result = toggleSubscriptionUseCase(eventId)
+
+                result.onSuccess {
+                    Log.d("HomeViewModel", "Toggle subscription exitoso para evento: $eventId")
+                }.onFailure { error ->
+                    Log.e("HomeViewModel", "Error al toggle subscription: ${error.message}")
+                    _uiState.update {
+                        it.copy(errorMessage = "Error al cambiar suscripción: ${error.message}")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "Excepción en toggleSubscription", e)
+                _uiState.update {
+                    it.copy(errorMessage = "Error al cambiar suscripción")
+                }
+            } finally {
+                // Remover de processingEventIds
+                _uiState.update {
+                    it.copy(processingEventIds = it.processingEventIds - eventId)
+                }
+            }
         }
     }
 

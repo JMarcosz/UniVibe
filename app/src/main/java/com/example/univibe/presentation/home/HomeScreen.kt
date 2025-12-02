@@ -25,10 +25,14 @@ fun HomeScreen(deepLinkEventId: String? = null) {
     val suggestedEvents by viewModel.suggestedEvents.collectAsState()
     val favoriteEvents by viewModel.favoriteEvents.collectAsState()
     val selectedEvent by viewModel.selectedEvent.collectAsState()
-    val isSubscribed by viewModel.isSubscribed.collectAsState()
+
+    val currentUserId = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
 
     val favoriteEventIds = favoriteEvents.map { it.id }.toSet()
-    val subscribedEventIds = isSubscribed.filterValues { it }.keys
+    // Calcular subscribedEventIds directamente desde los eventos en Firebase
+    val subscribedEventIds = uiState.events.filter { event ->
+        currentUserId?.let { event.subscriptions.containsKey(it) } ?: false
+    }.map { it.id }.toSet()
 
     // Manejar deep link para abrir evento automáticamente
     LaunchedEffect(deepLinkEventId) {

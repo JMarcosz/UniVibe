@@ -43,7 +43,6 @@ fun FindEventScreen(
     val uiState by viewModel.uiState.collectAsState()
     val filteredEvents by viewModel.filteredEvents.collectAsState()
     val selectedEvent by viewModel.selectedEvent.collectAsState()
-    val subscriptions by viewModel.subscriptions.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -81,12 +80,12 @@ fun FindEventScreen(
                 // Contenido cuando el SearchBar está activo
                 EventsList(
                     events = filteredEvents,
-                    subscriptions = subscriptions,
                     processingEventIds = uiState.processingEventIds,
                     onEventClick = viewModel::selectEvent,
                     onLikeClick = viewModel::toggleLike,
                     onSubscribeClick = viewModel::toggleSubscription,
-                    isFavorite = viewModel::isFavorite
+                    isFavorite = viewModel::isFavorite,
+                    isSubscribed = viewModel::isSubscribed
                 )
             }
 
@@ -104,12 +103,12 @@ fun FindEventScreen(
                 } else {
                     EventsList(
                         events = filteredEvents,
-                        subscriptions = subscriptions,
                         processingEventIds = uiState.processingEventIds,
                         onEventClick = viewModel::selectEvent,
                         onLikeClick = viewModel::toggleLike,
                         onSubscribeClick = viewModel::toggleSubscription,
-                        isFavorite = viewModel::isFavorite
+                        isFavorite = viewModel::isFavorite,
+                        isSubscribed = viewModel::isSubscribed
                     )
                 }
             }
@@ -144,12 +143,12 @@ fun FindEventScreen(
 @Composable
 private fun EventsList(
     events: List<Event>,
-    subscriptions: Map<String, Boolean>,
     processingEventIds: Set<String>,
     onEventClick: (Event) -> Unit,
     onLikeClick: (String) -> Unit,
     onSubscribeClick: (String) -> Unit,
-    isFavorite: (Event) -> Boolean
+    isFavorite: (Event) -> Boolean,
+    isSubscribed: (String) -> Boolean
 ) {
     if (events.isEmpty()) {
         Box(
@@ -173,7 +172,7 @@ private fun EventsList(
                 EventCard(
                     event = event,
                     isFavorite = isFavorite(event),
-                    isSubscribed = subscriptions[event.id] ?: false,
+                    isSubscribed = isSubscribed(event.id),
                     isProcessing = event.id in processingEventIds,
                     onCardClick = onEventClick,
                     onLikeClick = onLikeClick,
