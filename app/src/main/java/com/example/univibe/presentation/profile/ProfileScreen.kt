@@ -1,22 +1,14 @@
 package com.example.univibe.presentation.profile
 
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.Logout
-import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Email
@@ -29,19 +21,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import com.example.univibe.presentation.components.PhotoSelectionModal
+import com.example.univibe.presentation.components.UserAvatar
 import com.example.univibe.presentation.theme.*
 
 private val HeaderColor = BtnSecondary
@@ -53,16 +42,6 @@ fun ProfileScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
-
-    // Launcher para subir foto
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let {
-            viewModel.uploadProfilePhoto(it)
-            viewModel.dismissPhotoDialog()
-        }
-    }
 
     Scaffold(
         containerColor = BackgroundWhite,
@@ -105,52 +84,16 @@ fun ProfileScreen(
                         horizontalArrangement = Arrangement.SpaceAround,
                         verticalAlignment = Alignment.CenterVertically
                     ){
-                        // Foto de Perfil
-                        Box(contentAlignment = Alignment.Center) {
-                            Box(
-                                modifier = Modifier
-                                    .size(110.dp)
-                                    .clip(CircleShape)
-                                    .border(4.dp, Color.White, CircleShape)
-                                    .background(Color.Gray)
-                                    .clickable { if(uiState.isEditing) viewModel.onEditPhotoClick() },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (uiState.photoUrl.isNotEmpty()) {
-                                    AsyncImage(
-                                        model = ImageRequest.Builder(LocalContext.current)
-                                            .data(uiState.photoUrl)
-                                            .crossfade(true)
-                                            .build(),
-                                        contentDescription = "Foto",
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentScale = ContentScale.Crop
-                                    )
-                                } else {
-                                    Text(
-                                        text = uiState.firstName.take(1).uppercase(),
-                                        fontSize = 40.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.White
-                                    )
-                                }
-                            }
-
-                            // Icono cámara (modo edición)
-                            if (uiState.isEditing) {
-                                Box(
-                                    modifier = Modifier
-                                        .align(Alignment.BottomEnd)
-                                        .size(32.dp)
-                                        .background(BtnPrimary, CircleShape)
-                                        .border(2.dp, BackgroundWhite, CircleShape)
-                                        .clickable { viewModel.onEditPhotoClick() },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(Icons.Default.CameraAlt, null, tint = Color.White, modifier = Modifier.size(16.dp))
-                                }
-                            }
-                        }
+                        // Foto de Perfil usando componente reutilizable
+                        UserAvatar(
+                            photoUrl = uiState.getDisplayPhotoUrl(), // Usa el método que prioriza foto personalizada sobre Google
+                            initial = uiState.getInitial(),
+                            size = 110.dp,
+                            isEditable = uiState.isEditing,
+                            onEditClick = { viewModel.onEditPhotoClick() },
+                            borderColor = Color.White,
+                            borderWidth = 4.dp
+                        )
                         Column(){
                             // Textos Nombre/Rol
                             Text(
@@ -256,13 +199,16 @@ fun ProfileScreen(
             }
         }
 
-        // Dialogs y Overlays
-        if (uiState.showPhotoDialog) {
-            PhotoSelectionDialog(
-                onDismiss = viewModel::dismissPhotoDialog,
-                onSelectGallery = { imagePickerLauncher.launch("image/*") }
-            )
-        }
+        // Modal de selección de foto
+        PhotoSelectionModal(
+            isVisible = uiState.showPhotoDialog,
+            onDismiss = viewModel::dismissPhotoDialog,
+            onImageSelected = { uri ->
+                viewModel.uploadProfilePhoto(uri)
+                viewModel.dismissPhotoDialog()
+            },
+            isLoading = uiState.isLoading
+        )
 
         if (uiState.isLoading || uiState.isSaving) {
             Box(
@@ -336,20 +282,3 @@ fun FlatEditField(
     )
 }
 
-@Composable
-fun PhotoSelectionDialog(onDismiss: () -> Unit, onSelectGallery: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = BackgroundWhite,
-        title = { Text("Cambiar Foto", fontWeight = FontWeight.Bold, color = TextGray) },
-        text = { Text("Selecciona una imagen de tu galería.", color = LightGray) },
-        confirmButton = {
-            Button(onClick = onSelectGallery, colors = ButtonDefaults.buttonColors(containerColor = BtnPrimary)) {
-                Text("Galería")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancelar", color = TextGray) }
-        }
-    )
-}

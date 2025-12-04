@@ -52,7 +52,9 @@ class UserRepositoryImpl @Inject constructor(
                             lastName = snapshot.getString("lastName") ?: "",
                             phone = snapshot.getString("phone") ?: "",
                             photoUrl = snapshot.getString("photoUrl") ?: "",
-                            displayName = snapshot.getString("displayName") ?: ""
+                            googlePhotoUrl = snapshot.getString("googlePhotoUrl") ?: "",
+                            displayName = snapshot.getString("displayName") ?: "",
+                            hasCustomPhoto = snapshot.getBoolean("hasCustomPhoto") ?: false
                         )
                         Log.d(TAG, "Usuario cargado desde Firestore: ${user.email}, ${user.firstName} ${user.lastName}")
                         trySend(user)
@@ -70,6 +72,7 @@ class UserRepositoryImpl @Inject constructor(
                         val nameParts = displayName.trim().split(" ", limit = 2)
                         val firstName = nameParts.getOrNull(0) ?: ""
                         val lastName = nameParts.getOrNull(1) ?: ""
+                        val googlePhotoUrl = firebaseUser.photoUrl?.toString() ?: ""
 
                         val newUser = User(
                             userId = currentUserId,
@@ -77,8 +80,10 @@ class UserRepositoryImpl @Inject constructor(
                             firstName = firstName,
                             lastName = lastName,
                             phone = "",
-                            photoUrl = firebaseUser.photoUrl?.toString() ?: "",
-                            displayName = displayName
+                            photoUrl = "", // Vacío inicialmente, se llenará si sube foto personalizada
+                            googlePhotoUrl = googlePhotoUrl,
+                            displayName = displayName,
+                            hasCustomPhoto = false // No tiene foto personalizada al inicio
                         )
 
                         // Guardar en Firestore de forma asíncrona
@@ -89,7 +94,9 @@ class UserRepositoryImpl @Inject constructor(
                             "lastName" to newUser.lastName,
                             "phone" to newUser.phone,
                             "photoUrl" to newUser.photoUrl,
-                            "displayName" to newUser.displayName
+                            "googlePhotoUrl" to newUser.googlePhotoUrl,
+                            "displayName" to newUser.displayName,
+                            "hasCustomPhoto" to newUser.hasCustomPhoto
                         )
 
                         firestore.collection(USERS_COLLECTION)
@@ -129,7 +136,9 @@ class UserRepositoryImpl @Inject constructor(
                 "lastName" to user.lastName,
                 "phone" to user.phone,
                 "photoUrl" to user.photoUrl,
-                "displayName" to user.getFullName()
+                "googlePhotoUrl" to user.googlePhotoUrl,
+                "displayName" to user.getFullName(),
+                "hasCustomPhoto" to user.hasCustomPhoto
             )
 
             firestore.collection(USERS_COLLECTION)
@@ -160,7 +169,9 @@ class UserRepositoryImpl @Inject constructor(
                     lastName = snapshot.getString("lastName") ?: "",
                     phone = snapshot.getString("phone") ?: "",
                     photoUrl = snapshot.getString("photoUrl") ?: "",
-                    displayName = snapshot.getString("displayName") ?: ""
+                    googlePhotoUrl = snapshot.getString("googlePhotoUrl") ?: "",
+                    displayName = snapshot.getString("displayName") ?: "",
+                    hasCustomPhoto = snapshot.getBoolean("hasCustomPhoto") ?: false
                 )
                 Result.success(user)
             } else {
@@ -181,17 +192,22 @@ class UserRepositoryImpl @Inject constructor(
             val photoRef = storageRef.child("profile_photos/$userId.jpg")
 
             // Subir la imagen
-            val uploadTask = photoRef.putFile(imageUri).await()
+            photoRef.putFile(imageUri).await()
             Log.d(TAG, "Imagen subida exitosamente")
 
             // Obtener la URL de descarga
             val downloadUrl = photoRef.downloadUrl.await().toString()
             Log.d(TAG, "URL de descarga obtenida: $downloadUrl")
 
-            // Actualizar Firestore con la nueva URL
+            // Actualizar Firestore con la nueva URL y marcar que tiene foto personalizada
+            val updateMap = hashMapOf<String, Any>(
+                "photoUrl" to downloadUrl,
+                "hasCustomPhoto" to true
+            )
+
             firestore.collection(USERS_COLLECTION)
                 .document(userId)
-                .update("photoUrl", downloadUrl)
+                .update(updateMap)
                 .await()
 
             Log.d(TAG, "Firestore actualizado con nueva foto")

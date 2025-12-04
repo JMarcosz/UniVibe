@@ -1,5 +1,6 @@
 package com.example.univibe.presentation.register
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.univibe.domain.use_case.auth.SignUpUseCase
@@ -16,7 +17,9 @@ data class RegisterState(
     val email: String = "",
     val phone: String = "",
     val photoUrl: String = "",
-    val password:  String = "",
+    val password: String = "",
+    val selectedPhotoUri: Uri? = null, // URI temporal de la foto seleccionada
+    val showPhotoDialog: Boolean = false,
     val isLoading: Boolean = false,
     val error: String? = null,
     val registrationSuccess: Boolean = false
@@ -53,6 +56,23 @@ class RegisterViewModel @Inject constructor(
     @Suppress("unused")
     fun onPhotoUrlChange(photoUrl: String) {
         _uiState.update { it.copy(photoUrl = photoUrl) }
+    }
+
+    fun onEditPhotoClick() {
+        _uiState.update { it.copy(showPhotoDialog = true) }
+    }
+
+    fun dismissPhotoDialog() {
+        _uiState.update { it.copy(showPhotoDialog = false) }
+    }
+
+    fun onPhotoSelected(uri: Uri) {
+        _uiState.update {
+            it.copy(
+                selectedPhotoUri = uri,
+                photoUrl = uri.toString() // Temporalmente mostrar la URI como string
+            )
+        }
     }
 
     fun onSignUpClick() {

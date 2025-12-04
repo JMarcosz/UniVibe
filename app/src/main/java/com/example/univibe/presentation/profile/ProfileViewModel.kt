@@ -73,6 +73,8 @@ class ProfileViewModel @Inject constructor(
                                 email = user.email,
                                 phone = user.phone,
                                 photoUrl = user.photoUrl,
+                                googlePhotoUrl = user.googlePhotoUrl,
+                                hasCustomPhoto = user.hasCustomPhoto,
                                 subscribedEventsCount = 0 // TODO: Obtener de eventos suscritos
                             )
                         }
@@ -149,6 +151,9 @@ class ProfileViewModel @Inject constructor(
                         lastName = user.lastName,
                         email = user.email,
                         phone = user.phone,
+                        photoUrl = user.photoUrl,
+                        googlePhotoUrl = user.googlePhotoUrl,
+                        hasCustomPhoto = user.hasCustomPhoto,
                         errors = emptyMap()
                     )
                 }
@@ -193,7 +198,9 @@ class ProfileViewModel @Inject constructor(
                     firstName = currentState.firstName,
                     lastName = currentState.lastName,
                     phone = currentState.phone,
-                    photoUrl = currentState.photoUrl
+                    photoUrl = currentState.photoUrl,
+                    googlePhotoUrl = currentState.googlePhotoUrl,
+                    hasCustomPhoto = currentState.hasCustomPhoto
                 )
 
                 val result = updateUserProfileUseCase(updatedUser)
@@ -278,6 +285,7 @@ class ProfileViewModel @Inject constructor(
                         it.copy(
                             isSaving = false,
                             photoUrl = photoUrl,
+                            hasCustomPhoto = true, // Marcar que ahora tiene foto personalizada
                             successMessage = "Foto actualizada correctamente"
                         )
                     }
