@@ -1,35 +1,42 @@
 package com.example.univibe.presentation.menu
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.univibe.presentation.theme.*
 
 /**
- * Barra de navegación inferior (tabs) que se desacopla de estado local y
- * utiliza la ruta actual del NavHostController para determinar el tab activo.
- * - Cada tab muestra un pequeño indicador superior cuando está activo.
- * - Al hacer click navega a la ruta asociada y usa launchSingleTop.
+ * Barra de navegación inferior moderna y plana (Flat Design).
+ * - Elimina el efecto ripple para una sensación más "nativa" y limpia.
+ * - Usa transiciones de color suaves.
+ * - Tipografía clara y jerarquía visual mediante color.
  */
 @Composable
 fun NavBarScreen(
@@ -41,59 +48,75 @@ fun NavBarScreen(
 
     val items = NavTabs.mainTabs()
 
-    Row(
+    // Contenedor principal
+    // Usamos una sombra muy sutil (spotColor con alpha bajo) para separar del contenido
+    // sin usar bordes duros, manteniendo el estilo "Clean".
+    Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(80.dp)
-            .background(color = MaterialTheme.colorScheme.surface),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
+            .shadow(elevation = 12.dp, spotColor = Color.Black.copy(alpha = 0.04f))
+            .background(color = BackgroundWhite)
+            .height(65.dp) // Altura reducida para un look más moderno y compacto
     ) {
-        items.forEach { item ->
-            val selected = currentRoute == item.route
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            items.forEach { item ->
+                val selected = currentRoute == item.route
 
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .clickable {
-                        if (currentRoute != item.route) {
-                            navController.navigate(item.route) {
-                                launchSingleTop = true
-                                // Evita crear múltiples entradas iguales
-                                navController.graph.startDestinationRoute?.let { startRoute ->
-                                    popUpTo(startRoute) { saveState = true }
+                // Animación suave de color entre estados activo/inactivo
+                val contentColor by animateColorAsState(
+                    targetValue = if (selected) BtnPrimary else LightGray,
+                    animationSpec = spring(stiffness = Spring.StiffnessLow),
+                    label = "TabColorAnimation"
+                )
+
+                // InteractionSource nos permite interceptar el click y quitar el efecto ripple
+                val interactionSource = remember { MutableInteractionSource() }
+
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(65.dp)
+                        .clickable(
+                            interactionSource = interactionSource,
+                            indication = null // null elimina el efecto visual de "onda" al hacer click
+                        ) {
+                            if (currentRoute != item.route) {
+                                navController.navigate(item.route) {
+                                    launchSingleTop = true
+                                    navController.graph.startDestinationRoute?.let { startRoute ->
+                                        popUpTo(startRoute) { saveState = true }
+                                    }
+                                    restoreState = true
                                 }
-                                restoreState = true
                             }
-                        }
-                    },
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                // Indicador superior
-                Box(
-                    modifier = Modifier
-                        .width(36.dp)
-                        .height(6.dp)
-                        .background(
-                            color = if (selected) Color.Black else Color.Transparent,
-                        )
-                )
+                        },
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
 
-                Icon(
-                    painter = painterResource(id = item.iconRes),
-                    contentDescription = item.label,
-                    tint = if (selected) Color.Black else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                    modifier = Modifier
-                        .size(28.dp)
-                )
+                    // Icono
+                    Icon(
+                        painter = painterResource(id = item.iconRes),
+                        contentDescription = item.label,
+                        tint = contentColor,
+                        modifier = Modifier
+                            .size(24.dp) // Tamaño estándar y limpio
+                            .padding(bottom = 4.dp)
+                    )
 
-                Text(
-                    text = item.label,
-                    fontSize = 12.sp,
-                    textAlign = TextAlign.Center,
-                    color = if (selected) Color.Black else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
+                    // Texto
+                    Text(
+                        text = item.label,
+                        fontSize = 11.sp, // Texto pequeño y minimalista
+                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                        textAlign = TextAlign.Center,
+                        color = contentColor
+                    )
+                }
             }
         }
     }

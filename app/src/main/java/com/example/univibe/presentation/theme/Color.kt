@@ -9,7 +9,7 @@ val TerciaryBlue = Color (0xFF0F4D67)
 
 
 val DarkBlue = Color(0xFF1A237E)
-val LightGray = Color(0xFFF7F7F7)
+val LightGray = Color(0xFF6E6E6E)
 val TextGray = Color(0xFF262626)
 val TextField = Color(0xFFF9F9F9)
 

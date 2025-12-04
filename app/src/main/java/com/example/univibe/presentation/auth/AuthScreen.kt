@@ -6,6 +6,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -34,11 +35,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.LifecycleOwner
+import com.example.univibe.presentation.theme.LightGray
 
 
 @Composable
 fun AuthScreen(
-    viewModel: AuthViewModel = hiltViewModel()
+    viewModel: AuthViewModel = hiltViewModel(),
+    onNavigateToRegister: () -> Unit,
+    onNavigateToRecovery: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
@@ -127,7 +131,8 @@ fun AuthScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 32.dp),
+                .padding(horizontal = 32.dp)
+                .clickable{ onNavigateToRecovery() },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -184,6 +189,25 @@ fun AuthScreen(
             Text(text = it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(horizontal = 32.dp))
         }
 
+        Spacer(modifier = Modifier.weight(1f))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically){
+            Text(
+                text = "¿Aún no tienes una cuenta?",
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                color = TextGray,
+                fontSize = 16.sp
+            )
+            Text(
+                text = "Registrate",
+                modifier = Modifier.clickable{ onNavigateToRegister() },
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Bold,
+                color = LightGray,
+                fontSize = 16.sp
+            )
+        }
         Spacer(modifier = Modifier.weight(1f))
 
         if (uiState.isLoading) {

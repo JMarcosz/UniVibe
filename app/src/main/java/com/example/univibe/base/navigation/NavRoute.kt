@@ -6,4 +6,6 @@ sealed class NavRoute(val route: String) {
     object Find : NavRoute("find")
     object Events : NavRoute("events")
     object Profile : NavRoute("profile")
+    object Register : NavRoute("register")
+    object Recovery : NavRoute("recovery")
 }

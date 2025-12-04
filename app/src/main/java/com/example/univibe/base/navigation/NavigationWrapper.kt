@@ -24,6 +24,8 @@ import androidx.compose.foundation.layout.padding
 import com.example.univibe.presentation.events.EventScreen
 import com.example.univibe.presentation.find_event.FindEventScreen
 import com.example.univibe.presentation.profile.ProfileScreen
+import com.example.univibe.presentation.register.RegisterScreen
+import com.example.univibe.presentation.recovery.RecoveryScreen
 
 @Composable
 fun NavigationWrapper(
@@ -51,7 +53,11 @@ fun NavigationWrapper(
         NavHost(navController = navHostController, startDestination = startDestination, modifier = Modifier.padding(innerPadding)) {
             composable(NavRoute.Auth.route) {
                 val authViewModel: AuthViewModel = hiltViewModel()
-                AuthScreen(viewModel = authViewModel)
+                AuthScreen(
+                    viewModel = authViewModel,
+                    onNavigateToRegister = { navHostController.navigate(NavRoute.Register.route) },
+                    onNavigateToRecovery = { navHostController.navigate(NavRoute.Recovery.route) }
+                )
             }
             composable(NavRoute.Home.route) {
                 HomeScreen(deepLinkEventId = deepLinkEventId)
@@ -61,6 +67,28 @@ fun NavigationWrapper(
             composable(NavRoute.Events.route) { EventScreen()}
             composable(NavRoute.Profile.route) {
                 ProfileScreen()
+            }
+            composable(NavRoute.Register.route) {
+                RegisterScreen(
+                    onRegistrationSuccess = {
+                        navHostController.navigate(NavRoute.Auth.route) {
+                            popUpTo(NavRoute.Register.route) { inclusive = true }
+                        }
+                    },
+                    onBackToLogin = {
+                        navHostController.popBackStack()
+                    }
+                )
+            }
+            composable(NavRoute.Recovery.route) {
+                RecoveryScreen(
+                    onEmailSent = {
+                        navHostController.popBackStack()
+                    },
+                    onBackToLogin = {
+                        navHostController.popBackStack()
+                    }
+                )
             }
         }
     }
