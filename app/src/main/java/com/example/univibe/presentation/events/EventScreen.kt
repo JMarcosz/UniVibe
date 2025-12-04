@@ -17,11 +17,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.univibe.presentation.components.event.EventCard
 import com.example.univibe.presentation.event_details.EventDetailDialog
+import com.example.univibe.presentation.find_event.TextGray
 
 /**
  * Pantalla que muestra los eventos a los que el usuario está suscrito.
@@ -100,7 +103,9 @@ private fun EventList(
                 Text(
                     text = "Mis Eventos",
                     style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.onBackground
+                    color = TextGray,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
                 )
                 Text(
                     text = "${events.size} ${if (events.size == 1) "evento suscrito" else "eventos suscritos"}",

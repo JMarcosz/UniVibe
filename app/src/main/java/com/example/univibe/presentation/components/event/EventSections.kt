@@ -13,6 +13,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.univibe.domain.model.Event
+import com.example.univibe.presentation.find_event.TextGray
 
 @Composable
 fun SuggestionsSection(
@@ -32,9 +33,10 @@ fun SuggestionsSection(
     ) {
         Text(
             text = "Sugerencias",
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.headlineMedium,
+            color = TextGray,
             fontWeight = FontWeight.Bold,
-            fontSize = 18.sp
+            fontSize = 20.sp
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -81,9 +83,10 @@ fun FavoritesSection(
     ) {
         Text(
             text = "Favoritos",
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.headlineMedium,
+            color = TextGray,
             fontWeight = FontWeight.Bold,
-            fontSize = 18.sp
+            fontSize = 20.sp
         )
 
         Spacer(modifier = Modifier.height(12.dp))

@@ -110,7 +110,7 @@ private fun EventCardSideBar(isSubscribed: Boolean) {
             .width(6.dp)
             .fillMaxHeight()
             .background(
-                color = if (isSubscribed) BtnSecondary else BtnPrimary,
+                color = if (isSubscribed) BtnSecondary.copy(alpha = 0.8f) else BtnSecondary,
                 shape = RoundedCornerShape(
                     topStart = 16.dp,
                     bottomStart = 16.dp
@@ -270,7 +270,7 @@ private fun EventCardSubscribeButton(
             .height(44.dp),
         enabled = !isProcessing,
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSubscribed) Color.Gray else BtnSecondary,
+            containerColor = if (isSubscribed) BtnSecondary.copy(alpha = 0.8f) else BtnSecondary,
             contentColor = Color.White,
             disabledContainerColor = Color.Gray.copy(alpha = 0.6f),
             disabledContentColor = Color.White.copy(alpha = 0.7f)

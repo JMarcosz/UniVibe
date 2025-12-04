@@ -32,7 +32,9 @@ import com.example.univibe.domain.model.Event
 import com.example.univibe.presentation.theme.BackgroundWhite
 import com.example.univibe.presentation.theme.BtnPrimary
 import com.example.univibe.presentation.theme.BtnSecondary
+import com.example.univibe.presentation.theme.BtnTerciary
 import com.example.univibe.presentation.theme.SurfaceLight
+import com.example.univibe.presentation.theme.TerciaryBlue
 import com.example.univibe.presentation.theme.TextGray
 import com.google.firebase.auth.FirebaseAuth
 import java.text.SimpleDateFormat
@@ -225,7 +227,7 @@ private fun EventDetailBody(
         // 4. Código QR
         if (qrBitmap != null) {
             Card(
-                colors = CardDefaults.cardColors(containerColor = SurfaceLight),
+                colors = CardDefaults.cardColors(containerColor = BtnPrimary.copy(alpha = 0.1f)),
                 shape = RoundedCornerShape(16.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -265,7 +267,7 @@ private fun EventDetailBody(
                     .weight(1f)
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isLiked) BtnPrimary else SurfaceLight,
+                    containerColor = if (isLiked) BtnTerciary.copy(alpha = 0.8f) else BtnPrimary.copy(alpha = 0.1f),
                     contentColor = if (isLiked) Color.White else TextGray
                 ),
                 shape = RoundedCornerShape(12.dp),
@@ -287,7 +289,7 @@ private fun EventDetailBody(
                     .weight(1f)
                     .height(50.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isSubscribed) Color.Gray else BtnSecondary,
+                    containerColor = if (isSubscribed) BtnSecondary.copy(alpha = 0.8f) else BtnSecondary,
                     contentColor = Color.White
                 ),
                 shape = RoundedCornerShape(12.dp)

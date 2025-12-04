@@ -8,6 +8,10 @@ import com.example.univibe.domain.use_case.events.GetEventsUseCase
 import com.example.univibe.domain.use_case.events.SearchEventsUseCase
 import com.example.univibe.domain.use_case.events.ToggleEventSubscriptionUseCase
 import com.example.univibe.domain.use_case.events.ToggleLikeUseCase
+import com.example.univibe.domain.use_case.event.GetEventCategoriesUseCase
+import com.example.univibe.domain.use_case.event.FilterEventsByDateUseCase
+import com.example.univibe.domain.use_case.event.FilterEventsByCategoryUseCase
+import com.example.univibe.domain.use_case.event.DateFilter
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +27,9 @@ class FindEventViewModel @Inject constructor(
     private val searchEventsUseCase: SearchEventsUseCase,
     private val toggleLikeUseCase: ToggleLikeUseCase,
     private val toggleSubscriptionUseCase: ToggleEventSubscriptionUseCase,
+    private val getEventCategoriesUseCase: GetEventCategoriesUseCase,
+    private val filterByDateUseCase: FilterEventsByDateUseCase,
+    private val filterByCategoryUseCase: FilterEventsByCategoryUseCase,
     private val auth: FirebaseAuth
 ) : ViewModel() {
 
@@ -37,8 +44,12 @@ class FindEventViewModel @Inject constructor(
     private val _selectedEvent = MutableStateFlow<Event?>(null)
     val selectedEvent: StateFlow<Event?> = _selectedEvent.asStateFlow()
 
+    private val _eventCategories = MutableStateFlow<List<String>>(listOf("Todos"))
+    val eventCategories: StateFlow<List<String>> = _eventCategories.asStateFlow()
+
     init {
         loadEvents()
+        loadCategories()
     }
 
     private fun loadEvents() {
@@ -61,6 +72,20 @@ class FindEventViewModel @Inject constructor(
                         errorMessage = "Error al cargar eventos: ${e.message}"
                     )
                 }
+            }
+        }
+    }
+
+    private fun loadCategories() {
+        viewModelScope.launch {
+            try {
+                Log.d("FindEventViewModel", "Cargando categorías...")
+                getEventCategoriesUseCase().collect { categories ->
+                    Log.d("FindEventViewModel", "Categorías recibidas: $categories")
+                    _eventCategories.value = categories
+                }
+            } catch (e: Exception) {
+                Log.e("FindEventViewModel", "Error cargando categorías", e)
             }
         }
     }
@@ -156,6 +181,14 @@ class FindEventViewModel @Inject constructor(
 
     fun clearError() {
         _uiState.update { it.copy(errorMessage = null) }
+    }
+
+    fun filterByDate(dateFilter: DateFilter): List<Event> {
+        return filterByDateUseCase(_filteredEvents.value, dateFilter)
+    }
+
+    fun filterByCategory(category: String): List<Event> {
+        return filterByCategoryUseCase(_filteredEvents.value, category)
     }
 
     // Helper para verificar si un evento es favorito

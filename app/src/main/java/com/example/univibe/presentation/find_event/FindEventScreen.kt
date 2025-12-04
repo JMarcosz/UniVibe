@@ -22,11 +22,12 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.univibe.domain.model.Event
 import com.example.univibe.presentation.components.event.EventCard
 import com.example.univibe.presentation.event_details.EventDetailDialog
-import java.util.*
+import com.example.univibe.domain.use_case.event.DateFilter
 
 // --- Paleta de Colores ---
 val TextGray = Color(0xFF262626)
@@ -42,6 +43,7 @@ fun FindEventScreen(
     val uiState by viewModel.uiState.collectAsState()
     val filteredEvents by viewModel.filteredEvents.collectAsState()
     val selectedEvent by viewModel.selectedEvent.collectAsState()
+    val eventCategories by viewModel.eventCategories.collectAsState()
 
     // Estados locales para filtros adicionales (UI Only)
     var selectedTab by remember { mutableIntStateOf(0) } // 0: Fecha, 1: Categoría
@@ -49,24 +51,22 @@ fun FindEventScreen(
 
     // Lógica de filtrado local adicional (sobre los ya filtrados por búsqueda en VM)
     val finalFilteredEvents = remember(filteredEvents, selectedFilterChip, selectedTab) {
-        filteredEvents.filter { event ->
-            // Filtro por Chip (Categoría o Fecha)
-            when {
-                selectedFilterChip == "Todos" -> true
-                selectedTab == 1 -> {
-                    // Filtro por categoría
-                    event.category.equals(selectedFilterChip, ignoreCase = true)
+        when {
+            selectedFilterChip == "Todos" -> filteredEvents
+            selectedTab == 0 -> {
+                // Filtro por fecha usando el caso de uso
+                val dateFilter = when (selectedFilterChip) {
+                    "Hoy" -> DateFilter.TODAY
+                    "Mañana" -> DateFilter.TOMORROW
+                    "Esta semana" -> DateFilter.THIS_WEEK
+                    "Próximo mes" -> DateFilter.NEXT_MONTH
+                    else -> DateFilter.ALL
                 }
-                else -> {
-                    // Filtro por fecha (placeholder - implementar lógica real según necesidades)
-                    when (selectedFilterChip) {
-                        "Hoy" -> isToday(event.creationDate.toDate())
-                        "Mañana" -> isTomorrow(event.creationDate.toDate())
-                        "Esta semana" -> isThisWeek(event.creationDate.toDate())
-                        "Próximo mes" -> isNextMonth(event.creationDate.toDate())
-                        else -> true
-                    }
-                }
+                viewModel.filterByDate(dateFilter)
+            }
+            else -> {
+                // Filtro por categoría usando el caso de uso
+                viewModel.filterByCategory(selectedFilterChip)
             }
         }
     }
@@ -78,7 +78,7 @@ fun FindEventScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(BackgroundWhite)
-                    .padding(top = 16.dp, bottom = 8.dp)
+                    .padding(top = 20.dp, bottom = 8.dp)
             ) {
                 // Título
                 Text(
@@ -86,7 +86,8 @@ fun FindEventScreen(
                     style = MaterialTheme.typography.headlineMedium,
                     color = TextGray,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(horizontal = 20.dp)
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    fontSize = 20.sp
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -114,7 +115,8 @@ fun FindEventScreen(
                 FilterChipsRow(
                     currentTab = selectedTab,
                     selectedChip = selectedFilterChip,
-                    onChipSelected = { selectedFilterChip = it }
+                    onChipSelected = { selectedFilterChip = it },
+                    categories = eventCategories
                 )
             }
         }
@@ -252,13 +254,14 @@ fun FilterTabItem(
 fun FilterChipsRow(
     currentTab: Int,
     selectedChip: String,
-    onChipSelected: (String) -> Unit
+    onChipSelected: (String) -> Unit,
+    categories: List<String>
 ) {
     // Definimos las opciones según el tab seleccionado
     val options = if (currentTab == 0) {
         listOf("Todos", "Hoy", "Mañana", "Esta semana", "Próximo mes")
     } else {
-        listOf("Todos", "Deportes", "Música", "Arte", "Tecnología", "Social")
+        categories // Usar categorías dinámicas desde Firebase
     }
 
     LazyRow(
@@ -361,53 +364,4 @@ fun EmptyDataView() {
     }
 }
 
-// --- Funciones Helper para Filtrado de Fechas ---
-
-private fun isToday(date: Date): Boolean {
-    val calendar = Calendar.getInstance()
-
-    val calendarDate = Calendar.getInstance()
-    calendarDate.time = date
-
-    return calendar.get(Calendar.YEAR) == calendarDate.get(Calendar.YEAR) &&
-            calendar.get(Calendar.DAY_OF_YEAR) == calendarDate.get(Calendar.DAY_OF_YEAR)
-}
-
-private fun isTomorrow(date: Date): Boolean {
-    val calendar = Calendar.getInstance()
-    calendar.add(Calendar.DAY_OF_YEAR, 1)
-
-    val calendarDate = Calendar.getInstance()
-    calendarDate.time = date
-
-    return calendar.get(Calendar.YEAR) == calendarDate.get(Calendar.YEAR) &&
-            calendar.get(Calendar.DAY_OF_YEAR) == calendarDate.get(Calendar.DAY_OF_YEAR)
-}
-
-private fun isThisWeek(date: Date): Boolean {
-    val calendar = Calendar.getInstance()
-    val currentWeek = calendar.get(Calendar.WEEK_OF_YEAR)
-    val currentYear = calendar.get(Calendar.YEAR)
-
-    val calendarDate = Calendar.getInstance()
-    calendarDate.time = date
-    val dateWeek = calendarDate.get(Calendar.WEEK_OF_YEAR)
-    val dateYear = calendarDate.get(Calendar.YEAR)
-
-    return currentYear == dateYear && currentWeek == dateWeek
-}
-
-private fun isNextMonth(date: Date): Boolean {
-    val calendar = Calendar.getInstance()
-    calendar.add(Calendar.MONTH, 1)
-    val nextMonth = calendar.get(Calendar.MONTH)
-    val nextYear = calendar.get(Calendar.YEAR)
-
-    val calendarDate = Calendar.getInstance()
-    calendarDate.time = date
-    val dateMonth = calendarDate.get(Calendar.MONTH)
-    val dateYear = calendarDate.get(Calendar.YEAR)
-
-    return nextYear == dateYear && nextMonth == dateMonth
-}
 

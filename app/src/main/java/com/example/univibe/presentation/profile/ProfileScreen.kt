@@ -36,6 +36,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,7 +44,6 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.univibe.presentation.theme.*
 
-// Usamos BtnSecondary para el fondo principal como solicitaste
 private val HeaderColor = BtnSecondary
 private val TextFieldColorLocal = Color(0xFFF9F9F9)
 
@@ -100,7 +100,6 @@ fun ProfileScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    Spacer(modifier = Modifier.height(24.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround,
@@ -166,16 +165,19 @@ fun ProfileScreen(
                                 color = Color.White.copy(alpha = 0.7f)
                             )
                             Spacer(modifier = Modifier.height(24.dp))
+
                             Text(
                                 text = "${uiState.subscribedEventsCount}",
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = Color.White,
+                                textAlign = TextAlign.Center
                             )
                             Text(
                                 text = "Eventos",
                                 fontSize = 12.sp,
-                                color = Color.White.copy(alpha = 0.7f)
+                                color = Color.White.copy(alpha = 0.7f),
+                                textAlign = TextAlign.Center
                             )
 
                         }
@@ -193,12 +195,21 @@ fun ProfileScreen(
                     .padding(horizontal = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                IconButton(onClick = viewModel::toggleEditMode) {
-                    Icon(
-                        imageVector = if (uiState.isEditing) Icons.Default.Close else Icons.Default.Edit,
-                        contentDescription = "Editar",
-                        tint = Color.Gray
+                Row(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp), verticalAlignment = Alignment.CenterVertically ){
+                    Text(
+                        text = "Información personal",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = TextGray,
+                        modifier = Modifier.weight(1f)
                     )
+                    IconButton(onClick = viewModel::toggleEditMode) {
+                        Icon(
+                            imageVector = if (uiState.isEditing) Icons.Default.Close else Icons.Default.Edit,
+                            contentDescription = "Editar",
+                            tint = Color.Gray
+                        )
+                    }
                 }
                 if (uiState.isEditing) {
                     FlatEditField(value = uiState.firstName, onValueChange = viewModel::onFirstNameChange, label = "Nombre", icon = Icons.Default.Person)
