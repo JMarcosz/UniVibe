@@ -1,5 +1,6 @@
 package com.example.univibe.base.navigation
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -44,6 +45,7 @@ fun NavigationWrapper(
     val showBottomBar = currentRoute != null && bottomBarRoutes.contains(currentRoute)
 
     Scaffold(
+        contentWindowInsets = WindowInsets(0, 0, 0, 0), // Desactivar los insets automáticos del Scaffold
         bottomBar = {
             if (showBottomBar) {
                 NavBarScreen(navController = navHostController)

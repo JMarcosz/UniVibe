@@ -94,12 +94,50 @@ class FindEventViewModel @Inject constructor(
         val query = _uiState.value.searchQuery
         val events = _allEvents.value
         val filtered = searchEventsUseCase(events, query)
-        _filteredEvents.value = filtered
-        Log.d("FindEventViewModel", "Búsqueda: '$query', Resultados: ${filtered.size}")
+
+        // Aplicar filtros adicionales después de la búsqueda
+        val finalFiltered = applyCurrentFilters(filtered)
+        _filteredEvents.value = finalFiltered
+
+        Log.d("FindEventViewModel", "Búsqueda: '$query', Resultados: ${finalFiltered.size}")
+    }
+
+    private fun applyCurrentFilters(events: List<Event>): List<Event> {
+        val selectedChip = _uiState.value.selectedFilterChip
+        val selectedTab = _uiState.value.selectedTab
+
+        return when {
+            selectedChip == "Todos" -> events
+            selectedTab == 0 -> {
+                // Filtro por fecha
+                val dateFilter = when (selectedChip) {
+                    "Hoy" -> DateFilter.TODAY
+                    "Mañana" -> DateFilter.TOMORROW
+                    "Esta semana" -> DateFilter.THIS_WEEK
+                    "Próximo mes" -> DateFilter.NEXT_MONTH
+                    else -> DateFilter.ALL
+                }
+                filterByDateUseCase(events, dateFilter)
+            }
+            else -> {
+                // Filtro por categoría
+                filterByCategoryUseCase(events, selectedChip)
+            }
+        }
     }
 
     fun onSearchQueryChange(query: String) {
         _uiState.update { it.copy(searchQuery = query) }
+        applySearch()
+    }
+
+    fun onTabSelected(tab: Int) {
+        _uiState.update { it.copy(selectedTab = tab, selectedFilterChip = "Todos") }
+        applySearch()
+    }
+
+    fun onFilterChipSelected(chip: String) {
+        _uiState.update { it.copy(selectedFilterChip = chip) }
         applySearch()
     }
 
@@ -183,13 +221,6 @@ class FindEventViewModel @Inject constructor(
         _uiState.update { it.copy(errorMessage = null) }
     }
 
-    fun filterByDate(dateFilter: DateFilter): List<Event> {
-        return filterByDateUseCase(_filteredEvents.value, dateFilter)
-    }
-
-    fun filterByCategory(category: String): List<Event> {
-        return filterByCategoryUseCase(_filteredEvents.value, category)
-    }
 
     // Helper para verificar si un evento es favorito
     fun isFavorite(event: Event): Boolean {

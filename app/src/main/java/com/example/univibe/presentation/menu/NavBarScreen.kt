@@ -10,8 +10,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -37,6 +40,7 @@ import com.example.univibe.presentation.theme.*
  * - Elimina el efecto ripple para una sensación más "nativa" y limpia.
  * - Usa transiciones de color suaves.
  * - Tipografía clara y jerarquía visual mediante color.
+ * - Respeta los insets del sistema para evitar superposición con botones de navegación.
  */
 @Composable
 fun NavBarScreen(
@@ -48,6 +52,9 @@ fun NavBarScreen(
 
     val items = NavTabs.mainTabs()
 
+    // Obtener el padding de los navigation bars del sistema
+    val navigationBarsPadding = WindowInsets.navigationBars.asPaddingValues()
+
     // Contenedor principal
     // Usamos una sombra muy sutil (spotColor con alpha bajo) para separar del contenido
     // sin usar bordes duros, manteniendo el estilo "Clean".
@@ -56,11 +63,13 @@ fun NavBarScreen(
             .fillMaxWidth()
             .shadow(elevation = 12.dp, spotColor = Color.Black.copy(alpha = 0.04f))
             .background(color = BackgroundWhite)
-            .height(65.dp)
-            .padding(bottom = 4.dp)// Altura reducida para un look más moderno y compacto
+            // Agregamos el padding bottom de los navigation bars para que no se superponga
+            .padding(bottom = navigationBarsPadding.calculateBottomPadding())
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(65.dp), // Altura del contenido de la barra
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {

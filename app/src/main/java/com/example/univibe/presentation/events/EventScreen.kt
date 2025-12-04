@@ -98,7 +98,7 @@ private fun EventList(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp)
+                    .padding(vertical = 12.dp)
             ) {
                 Text(
                     text = "Mis Eventos",
@@ -110,7 +110,8 @@ private fun EventList(
                 Text(
                     text = "${events.size} ${if (events.size == 1) "evento suscrito" else "eventos suscritos"}",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+                    fontWeight = FontWeight.SemiBold
                 )
             }
         }

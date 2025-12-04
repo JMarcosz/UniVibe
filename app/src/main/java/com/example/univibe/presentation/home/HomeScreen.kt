@@ -49,7 +49,7 @@ fun HomeScreen(deepLinkEventId: String? = null) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
-            contentPadding = PaddingValues(vertical = 24.dp)
+            contentPadding = PaddingValues(top = 12.dp, bottom = 16.dp),
         ) {
             // Sección de Sugerencias
             item {

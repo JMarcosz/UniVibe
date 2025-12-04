@@ -27,7 +27,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.univibe.domain.model.Event
 import com.example.univibe.presentation.components.event.EventCard
 import com.example.univibe.presentation.event_details.EventDetailDialog
-import com.example.univibe.domain.use_case.event.DateFilter
 
 // --- Paleta de Colores ---
 val TextGray = Color(0xFF262626)
@@ -45,32 +44,6 @@ fun FindEventScreen(
     val selectedEvent by viewModel.selectedEvent.collectAsState()
     val eventCategories by viewModel.eventCategories.collectAsState()
 
-    // Estados locales para filtros adicionales (UI Only)
-    var selectedTab by remember { mutableIntStateOf(0) } // 0: Fecha, 1: Categoría
-    var selectedFilterChip by remember { mutableStateOf("Todos") }
-
-    // Lógica de filtrado local adicional (sobre los ya filtrados por búsqueda en VM)
-    val finalFilteredEvents = remember(filteredEvents, selectedFilterChip, selectedTab) {
-        when {
-            selectedFilterChip == "Todos" -> filteredEvents
-            selectedTab == 0 -> {
-                // Filtro por fecha usando el caso de uso
-                val dateFilter = when (selectedFilterChip) {
-                    "Hoy" -> DateFilter.TODAY
-                    "Mañana" -> DateFilter.TOMORROW
-                    "Esta semana" -> DateFilter.THIS_WEEK
-                    "Próximo mes" -> DateFilter.NEXT_MONTH
-                    else -> DateFilter.ALL
-                }
-                viewModel.filterByDate(dateFilter)
-            }
-            else -> {
-                // Filtro por categoría usando el caso de uso
-                viewModel.filterByCategory(selectedFilterChip)
-            }
-        }
-    }
-
     Scaffold(
         containerColor = BackgroundWhite,
         topBar = {
@@ -86,7 +59,7 @@ fun FindEventScreen(
                     style = MaterialTheme.typography.headlineMedium,
                     color = TextGray,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(horizontal = 20.dp),
+                    modifier = Modifier.padding(vertical = 12.dp, horizontal = 20.dp),
                     fontSize = 20.sp
                 )
 
@@ -102,20 +75,17 @@ fun FindEventScreen(
 
                 // Tabs de Filtros (Fecha / Categoría)
                 FilterTabsSection(
-                    selectedTab = selectedTab,
-                    onTabSelected = {
-                        selectedTab = it
-                        selectedFilterChip = "Todos" // Reset chip al cambiar tab
-                    }
+                    selectedTab = uiState.selectedTab,
+                    onTabSelected = viewModel::onTabSelected
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 // Chips dinámicos según el Tab seleccionado
                 FilterChipsRow(
-                    currentTab = selectedTab,
-                    selectedChip = selectedFilterChip,
-                    onChipSelected = { selectedFilterChip = it },
+                    currentTab = uiState.selectedTab,
+                    selectedChip = uiState.selectedFilterChip,
+                    onChipSelected = viewModel::onFilterChipSelected,
                     categories = eventCategories
                 )
             }
@@ -135,14 +105,14 @@ fun FindEventScreen(
                 )
 
                 // Lista Vacia tras filtrar
-                finalFilteredEvents.isEmpty() && uiState.searchQuery.isNotEmpty() -> EmptySearchView()
+                filteredEvents.isEmpty() && uiState.searchQuery.isNotEmpty() -> EmptySearchView()
 
                 // Lista Vacia general
                 filteredEvents.isEmpty() -> EmptyDataView()
 
                 else -> {
                     EventListContent(
-                        events = finalFilteredEvents,
+                        events = filteredEvents,
                         processingEventIds = uiState.processingEventIds,
                         onEventClick = viewModel::selectEvent,
                         onSubscribeClick = { event -> viewModel.toggleSubscription(event.id) },

@@ -5,6 +5,9 @@ data class FindEventUiState(
     val searchQuery: String = "",
     val isSearchActive: Boolean = false,
     val errorMessage: String? = null,
-    val processingEventIds: Set<String> = emptySet()
+    val processingEventIds: Set<String> = emptySet(),
+    // Nuevos campos para los filtros
+    val selectedTab: Int = 0, // 0: Fecha, 1: Categoría
+    val selectedFilterChip: String = "Todos"
 )
 
