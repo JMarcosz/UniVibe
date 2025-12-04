@@ -56,7 +56,8 @@ fun NavBarScreen(
             .fillMaxWidth()
             .shadow(elevation = 12.dp, spotColor = Color.Black.copy(alpha = 0.04f))
             .background(color = BackgroundWhite)
-            .height(65.dp) // Altura reducida para un look más moderno y compacto
+            .height(65.dp)
+            .padding(bottom = 4.dp)// Altura reducida para un look más moderno y compacto
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

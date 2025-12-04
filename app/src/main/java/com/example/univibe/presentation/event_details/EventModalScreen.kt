@@ -66,9 +66,7 @@ fun EventDetailDialog(
         // Contenedor principal con forma redondeada y padding para efecto "tarjeta flotante grande"
         Surface(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            shape = RoundedCornerShape(24.dp),
+                .fillMaxSize(),
             color = BackgroundWhite,
             tonalElevation = 8.dp
         ) {
@@ -119,9 +117,10 @@ fun CustomModalTopBar(onDismiss: () -> Unit) {
     ) {
         Text(
             text = "Detalles del Evento",
-            style = MaterialTheme.typography.titleMedium,
-            color = TextGray,
-            fontWeight = FontWeight.Bold
+            style = MaterialTheme.typography.headlineMedium,
+            color = com.example.univibe.presentation.find_event.TextGray,
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp
         )
         IconButton(onClick = onDismiss) {
             Icon(
