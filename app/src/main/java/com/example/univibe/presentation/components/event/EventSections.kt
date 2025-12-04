@@ -20,7 +20,7 @@ fun SuggestionsSection(
     favoriteEventIds: Set<String>,
     subscribedEventIds: Set<String>,
     processingEventIds: Set<String>,
-    onEventClick: (Event) -> Unit,
+    onEventClick: (Event)  -> Unit,
     onLikeClick: (String) -> Unit,
     onSubscribeClick: (String) -> Unit,
     modifier: Modifier = Modifier

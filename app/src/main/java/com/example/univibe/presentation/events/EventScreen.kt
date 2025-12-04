@@ -21,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.univibe.presentation.components.event.EventCard
-import com.example.univibe.presentation.components.event.modal.EventDetailDialog
+import com.example.univibe.presentation.event_details.EventDetailDialog
 
 /**
  * Pantalla que muestra los eventos a los que el usuario está suscrito.

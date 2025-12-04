@@ -1,4 +1,4 @@
-package com.example.univibe.presentation.components.event.modal
+package com.example.univibe.presentation.event_details.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons

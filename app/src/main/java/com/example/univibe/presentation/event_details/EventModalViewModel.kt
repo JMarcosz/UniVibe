@@ -1,4 +1,4 @@
-package com.example.univibe.presentation.components.event.modal
+package com.example.univibe.presentation.event_details
 
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
