@@ -1,7 +1,7 @@
 # UniVibe 🎉
 
 <p align="center">
-  <img src="app/src/main/res/drawable/ic_logo_univibe.xml" alt="UniVibe Logo" width="120"/>
+  <img src="app/src/main/res/drawable/logo_univibe.png" alt="UniVibe Logo" width="120"/>
 </p>
 
 <p align="center">
